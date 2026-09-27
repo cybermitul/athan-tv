@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+<title>Prayer Times</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;600&family=Noto+Sans+Bengali:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#e9c46a; --accent:#5fd4a8; --text:#f4f1ea; --muted:rgba(244,241,234,.66);
+    --glass:rgba(8,15,24,.58); --glass-border:rgba(255,255,255,.12);
+    --ui:'Inter','Segoe UI',system-ui,sans-serif;
+    --ar:'Amiri Quran','Amiri','Noto Naskh Arabic','Noto Sans Arabic',serif;
+    --ur:'Noto Nastaliq Urdu','Noto Naskh Arabic','Noto Sans Arabic',serif;
+    --bn:'Noto Sans Bengali','Noto Serif Bengali',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;background:#0a1420;color:var(--text);font-family:var(--ui);cursor:none}
+
+  /* ---------- background ---------- */
+  .fallback{position:fixed;inset:0;background:radial-gradient(ellipse at 70% 20%,#1d3b5a 0%,#0a1420 65%)}
+  .bg{position:fixed;inset:-2%;background-size:cover;background-position:center;opacity:0;transition:opacity 3s ease}
+  .bg.show{opacity:1}
+  .bg.kb{animation:kb 90s ease-in-out infinite alternate}
+  @keyframes kb{from{transform:scale(1)}to{transform:scale(1.07)}}
+  .shade{position:fixed;inset:0;background:
+    linear-gradient(90deg,rgba(4,9,16,.80) 0%,rgba(4,9,16,.42) 42%,rgba(4,9,16,.60) 100%),
+    linear-gradient(180deg,rgba(4,9,16,.55) 0%,rgba(4,9,16,.10) 28%,rgba(4,9,16,.65) 100%)}
+
+  /* ---------- layout ---------- */
+  .wrap{position:relative;z-index:2;height:100vh;display:grid;grid-template-rows:auto 1fr auto;padding:3vh 2.8vw 2vh;gap:2.4vh}
+  header{display:flex;justify-content:space-between;align-items:flex-end}
+  .clock{font-size:7vw;font-weight:700;line-height:.9;letter-spacing:-.02em;font-variant-numeric:tabular-nums;text-shadow:0 .3vw 1.5vw rgba(0,0,0,.55)}
+  .clock .sec{font-size:.38em;color:var(--muted);font-weight:500;margin-left:.3vw}
+  .clock .ampm{font-size:.3em;color:var(--muted);font-weight:600;margin-left:.5vw;letter-spacing:.05em}
+  .dates{text-align:right;text-shadow:0 .2vw 1vw rgba(0,0,0,.65)}
+  .hijri-ar{font-family:var(--ar);font-size:2.3vw;color:var(--gold);line-height:1.5;direction:rtl}
+  .hijri{font-size:1.45vw;color:var(--gold);font-weight:600}
+  .greg{font-size:1.25vw;color:var(--muted);margin-top:.4vh}
+
+  main{display:grid;grid-template-columns:31vw 1fr;gap:1.8vw;min-height:0}
+  .glass{background:var(--glass);border:1px solid var(--glass-border);border-radius:1.1vw;box-shadow:0 1vw 3vw rgba(0,0,0,.25)}
+
+  /* ---------- prayers column ---------- */
+  .left{display:flex;flex-direction:column;gap:1.8vh;min-height:0}
+  .next{padding:2vh 1.6vw;border-left:.35vw solid var(--accent)}
+  .next .label{font-size:.95vw;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  .next .name{font-size:2.5vw;font-weight:700;margin-top:.5vh;display:flex;align-items:baseline;gap:.8vw;flex-wrap:wrap}
+  .next .name .ar{font-family:var(--ar);font-weight:400;color:var(--gold);font-size:.95em}
+  .next .cd{font-size:3.2vw;font-weight:600;font-variant-numeric:tabular-nums;margin-top:.3vh}
+  .next.soon .cd{color:var(--gold);animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.5}}
+
+  .plist{flex:1;display:flex;flex-direction:column;padding:.8vh .5vw;min-height:0}
+  .prow{flex:1;display:grid;grid-template-columns:1fr auto;align-items:center;padding:0 1.2vw;border-radius:.8vw;border:2px solid transparent;transition:background .6s,border-color .6s}
+  .prow + .prow{border-top-color:transparent;box-shadow:0 -1px 0 rgba(255,255,255,.07)}
+  .pname{font-size:1.75vw;font-weight:600;line-height:1.15}
+  .pname .ar{display:block;font-family:var(--ar);font-weight:400;font-size:1.3vw;color:var(--muted);line-height:1.3}
+  .ptime{font-size:2.4vw;font-weight:700;font-variant-numeric:tabular-nums}
+  .ptime small{font-size:.48em;color:var(--muted);margin-left:.3vw;font-weight:600}
+  .prow.sunrise{opacity:.62}
+  .prow.sunrise .pname,.prow.sunrise .ptime{font-weight:500}
+  .prow.active{background:rgba(95,212,168,.16);border-color:var(--accent);box-shadow:none}
+  .prow.active .pname{color:var(--accent)}
+
+  /* ---------- ayah / hadith cards ---------- */
+  .right{display:grid;grid-template-rows:1fr 1.15fr;gap:1.8vh;min-height:0}
+  .card{display:flex;flex-direction:column;padding:2.2vh 2vw;min-height:0;--fs:1}
+  .card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:1vh}
+  .card-title{font-size:.95vw;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  .langs{display:flex;gap:.45vw}
+  .langs span{font-size:.8vw;padding:.25vh .7vw;border-radius:1vw;border:1px solid rgba(255,255,255,.22);color:var(--muted);transition:all .6s}
+  .langs span.on{background:var(--gold);color:#1b1b1b;border-color:var(--gold);font-weight:600}
+  .card-body{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .inner{width:100%;display:flex;flex-direction:column;gap:1.6vh}
+  .arabic{font-family:var(--ar);direction:rtl;text-align:center;font-size:calc(2.5vw * var(--fs));line-height:1.95;color:#fff;text-shadow:0 .15vw .8vw rgba(0,0,0,.5)}
+  .trans{text-align:center;font-size:calc(1.5vw * var(--fs));line-height:1.5;transition:opacity .8s ease}
+  .trans.fade{opacity:0}
+  .trans.ur{font-family:var(--ur);direction:rtl;font-size:calc(1.4vw * var(--fs));line-height:2.35}
+  .trans.bn{font-family:var(--bn);font-size:calc(1.45vw * var(--fs));line-height:1.6}
+  .ref{text-align:center;font-size:1vw;color:var(--gold);margin-top:1vh;opacity:.9}
+  .ref .ar{font-family:var(--ar);font-size:1.25em}
+
+  footer{display:flex;justify-content:space-between;font-size:.8vw;color:var(--muted)}
+  #status{color:#f0a7a7}
+</style>
+</head>
+<body>
+<div class="fallback"></div>
+<div class="bg kb" id="bgA"></div>
+<div class="bg kb" id="bgB"></div>
+<div class="shade"></div>
+
+<div class="wrap">
+  <header>
+    <div class="clock" id="clock">--:--</div>
+    <div class="dates">
+      <div class="hijri-ar" id="hijriAr" lang="ar">&nbsp;</div>
+      <div class="hijri" id="hijri">&nbsp;</div>
+      <div class="greg" id="greg">&nbsp;</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="left">
+      <div class="next glass" id="next">
+        <div class="label">Next Prayer</div>
+        <div class="name" id="nextName">—</div>
+        <div class="cd" id="nextCd">&nbsp;</div>
+      </div>
+      <div class="plist glass" id="plist"></div>
+    </section>
+
+    <section class="right">
+      <div class="card glass" id="ayahCard">
+        <div class="card-h"><div class="card-title">Ayah of the Hour</div><div class="langs"></div></div>
+        <div class="card-body"><div class="inner">
+          <div class="arabic" lang="ar"></div>
+          <div class="trans"></div>
+        </div></div>
+        <div class="ref"></div>
+      </div>
+      <div class="card glass" id="hadithCard">
+        <div class="card-h"><div class="card-title">Hadith of the Hour</div><div class="langs"></div></div>
+        <div class="card-body"><div class="inner">
+          <div class="arabic" lang="ar"></div>
+          <div class="trans"></div>
+        </div></div>
+        <div class="ref"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div id="methodInfo">&nbsp;</div>
+    <div id="status"></div>
+  </footer>
+</div>
+
+<script src="config.js"></script>
+<script>
+/* ============================ CONFIG ============================
+   Defaults only. On an installed box, config.js (generated from
+   /etc/default/athan by apply-config.sh) overrides these values.
+   ================================================================ */
+const DEFAULTS = {
+  latitude: 40.7128,              // example: New York City -- set yours in /etc/default/athan
+  longitude: -74.0060,
+  method: 2,                      // 2 = ISNA. Full list: aladhan.com/prayer-times-api
+  school: 0,                      // 0 = standard Asr, 1 = Hanafi Asr
+  tune: "",                       // optional minute offsets, see Aladhan docs
+
+  backgrounds: ["bg/1.jpg","bg/2.jpg","bg/3.jpg","bg/4.jpg","bg/5.jpg","bg/6.jpg",
+                "bg/7.jpg","bg/8.jpg","bg/9.jpg","bg/10.jpg"],  // missing files are skipped
+  bgSeconds: 600,                 // switch background every 10 min
+  kenBurns: true,                 // slow zoom on background
+
+  translationSeconds: 15,         // rotate translations every 15 s
+  langs: ["en","ur","bn"],
+  langLabels: { en: "English", ur: "اردو", bn: "বাংলা" },
+
+  quranEditions: { ar: "quran-uthmani", en: "en.sahih", ur: "ur.jalandhry", bn: "bn.bengali" },
+  hadithBooks: [
+    { key: "bukhari", name: "Sahih al-Bukhari", max: 7563 },
+    { key: "muslim",  name: "Sahih Muslim",     max: 7470 }
+  ]
+};
+const CONFIG = Object.assign({}, DEFAULTS, window.ATHAN_CONFIG || {});
+/* ================================================================ */
+
+const PRAYERS = [
+  { key: "Fajr",    ar: "الفجر" },
+  { key: "Sunrise", ar: "الشروق", info: true },
+  { key: "Dhuhr",   ar: "الظهر" },
+  { key: "Asr",     ar: "العصر" },
+  { key: "Maghrib", ar: "المغرب" },
+  { key: "Isha",    ar: "العشاء" }
+];
+const L3 = { ar: "ara", en: "eng", ur: "urd", bn: "ben" };
+
+const FALLBACK = {
+  ayah:   { ar: "فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا", tr: { en: "For indeed, with hardship [will be] ease." },
+            ref: "Surah Ash-Sharh (The Relief) · 94:5", refAr: "سورة الشرح" },
+  hadith: { ar: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى",
+            tr: { en: "Actions are only by intentions, and every person will have only what he intended." },
+            ref: "Sahih al-Bukhari 1", refAr: "" }
+};
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, "0");
+const toArDigits = s => String(s).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+async function getJSON(url, ms = 15000){
+  const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
+  try { const r = await fetch(url, { signal: c.signal }); if (!r.ok) throw new Error("HTTP " + r.status); return await r.json(); }
+  finally { clearTimeout(t); }
+}
+const cleanText = s => (s || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+const toMin = hhmm => { const [h,m] = hhmm.split(":").map(Number); return h*60 + m; };
+function fmt12(hhmm){ let [h,m] = hhmm.split(":").map(Number); const ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12; return { t: `${h}:${pad(m)}`, ap }; }
+function setStatus(msg){ $("status").textContent = msg || ""; }
+
+/* ---------- prayer times ---------- */
+let T = null;              // { key, timings, hijri, hijriAr }
+let timingsRetry = null;
+
+async function loadTimings(){
+  const d = new Date();
+  const key = `${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()}`;
+  const cached = store.get("timings");
+  if (cached && cached.key === key) applyTimings(cached);
+  try {
+    const url = `https://api.aladhan.com/v1/timings/${key}?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
+              + `&method=${CONFIG.method}&school=${CONFIG.school}` + (CONFIG.tune ? `&tune=${CONFIG.tune}` : "");
+    const j = await getJSON(url);
+    const t = j.data.timings, h = j.data.date.hijri, meta = j.data.meta;
+    const timings = {};
+    PRAYERS.forEach(p => timings[p.key] = String(t[p.key]).split(" ")[0]);
+    const rec = {
+      key, timings,
+      hijri:   `${h.day} ${h.month.en} ${h.year} AH`,
+      hijriAr: `${toArDigits(Number(h.day))} ${h.month.ar} ${toArDigits(h.year)} هـ`,
+      method:  meta && meta.method ? meta.method.name : ""
+    };
+    store.set("timings", rec);
+    applyTimings(rec);
+    setStatus("");
+  } catch(e) {
+    if (!(cached && cached.key === key)) setStatus("Prayer times unavailable — retrying…");
+    clearTimeout(timingsRetry);
+    timingsRetry = setTimeout(loadTimings, 60000);
+  }
+}
+
+function applyTimings(rec){
+  T = rec;
+  $("hijri").textContent = rec.hijri;
+  $("hijriAr").textContent = rec.hijriAr;
+  $("methodInfo").textContent = `${rec.method || "Calculation method " + CONFIG.method} · Asr: ${CONFIG.school ? "Hanafi" : "Standard"}`;
+  const friday = new Date().getDay() === 5;
+  $("plist").innerHTML = PRAYERS.map(p => {
+    const name = (p.key === "Dhuhr" && friday) ? "Jumu'ah" : p.key;
+    const ar   = (p.key === "Dhuhr" && friday) ? "الجمعة" : p.ar;
+    const f = fmt12(rec.timings[p.key]);
+    return `<div class="prow${p.info ? " sunrise" : ""}" id="row-${p.key}">
+              <div class="pname">${name}<span class="ar" lang="ar">${ar}</span></div>
+              <div class="ptime">${f.t}<small>${f.ap}</small></div>
+            </div>`;
+  }).join("");
+}
+
+/* ---------- clock + next prayer ---------- */
+let lastDay = new Date().toDateString();
+let lastHour = new Date().getHours();
+
+function tick(){
+  const now = new Date();
+  let h = now.getHours() % 12 || 12;
+  $("clock").innerHTML = `${h}:${pad(now.getMinutes())}<span class="sec">${pad(now.getSeconds())}</span><span class="ampm">${now.getHours() >= 12 ? "PM" : "AM"}</span>`;
+  $("greg").textContent = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+  if (now.toDateString() !== lastDay) { lastDay = now.toDateString(); loadTimings(); }
+  if (now.getHours() !== lastHour)    { lastHour = now.getHours(); refreshContent(); }
+  if (now.getHours() === 3 && now.getMinutes() === 0 && performance.now() > 120000) location.reload(); // daily fresh start
+
+  if (!T) return;
+  const nowMin = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
+  const real = PRAYERS.filter(p => !p.info);
+
+  // active = most recent prayer whose time has passed (Isha carries over past midnight)
+  let active = null;
+  real.forEach(p => { if (toMin(T.timings[p.key]) <= nowMin) active = p.key; });
+  if (!active) active = "Isha";
+  const sunrise = toMin(T.timings.Sunrise), dhuhr = toMin(T.timings.Dhuhr);
+  if (nowMin >= sunrise && nowMin < dhuhr) active = null; // Fajr window ended at sunrise
+
+  PRAYERS.forEach(p => { const r = $("row-" + p.key); if (r) r.classList.toggle("active", p.key === active); });
+
+  let next = real.find(p => toMin(T.timings[p.key]) > nowMin);
+  let diff;
+  if (next) diff = toMin(T.timings[next.key]) - nowMin;
+  else { next = real[0]; diff = (1440 - nowMin) + toMin(T.timings.Fajr); }
+
+  const friday = now.getDay() === 5;
+  const nName = (next.key === "Dhuhr" && friday) ? "Jumu'ah" : next.key;
+  const nAr   = (next.key === "Dhuhr" && friday) ? "الجمعة" : next.ar;
+  const f = fmt12(T.timings[next.key]);
+  $("nextName").innerHTML = `${nName}<span class="ar" lang="ar">${nAr}</span><span style="font-weight:500;color:var(--muted);font-size:.7em">${f.t} ${f.ap}</span>`;
+  const secs = Math.max(0, Math.round(diff * 60));
+  $("nextCd").textContent = `${Math.floor(secs/3600)}:${pad(Math.floor(secs%3600/60))}:${pad(secs%60)}`;
+  $("next").classList.toggle("soon", secs <= 600);
+}
+
+/* ---------- backgrounds ---------- */
+async function initBackgrounds(){
+  const ok = new Set();
+  await Promise.all(CONFIG.backgrounds.map(src => new Promise(res => {
+    const i = new Image(); i.onload = () => { ok.add(src); res(); }; i.onerror = res; i.src = src;
+  })));
+  const list = CONFIG.backgrounds.filter(s => ok.has(s));
+  if (!list.length) return;                       // keep gradient fallback
+  const layers = [$("bgA"), $("bgB")];
+  if (!CONFIG.kenBurns) layers.forEach(l => l.classList.remove("kb"));
+  let idx = Math.floor(Math.random() * list.length), cur = 0;
+  const show = () => {
+    layers[cur].style.backgroundImage = `url("${list[idx]}")`;
+    layers[cur].classList.add("show");
+    layers[1-cur].classList.remove("show");
+    cur = 1 - cur; idx = (idx + 1) % list.length;
+  };
+  show();
+  if (list.length > 1) setInterval(show, CONFIG.bgSeconds * 1000);
+}
+
+/* ---------- Quran ---------- */
+async function fetchAyah(){
+  for (let attempt = 0; attempt < 8; attempt++){
+    const n = 1 + Math.floor(Math.random() * 6236);
+    const base = `https://api.alquran.cloud/v1/ayah/${n}/`;
+    let en;
+    try { en = (await getJSON(base + CONFIG.quranEditions.en)).data; } catch(e){ continue; }
+    if (!en || !en.text || en.text.length > 280) continue;      // keep it readable on screen
+    const others = await Promise.allSettled(["ar","ur","bn"].map(l => getJSON(base + CONFIG.quranEditions[l])));
+    const [ar, ur, bn] = others.map(r => r.status === "fulfilled" && r.value.data ? cleanText(r.value.data.text) : "");
+    if (!ar || ar.length > 330) continue;
+    const s = en.surah;
+    return { ar, tr: { en: cleanText(en.text), ur, bn },
+             ref: `Surah ${s.englishName} (${s.englishNameTranslation}) · ${s.number}:${en.numberInSurah}`,
+             refAr: `${s.name} ${toArDigits(en.numberInSurah)}` };
+  }
+  throw new Error("no ayah");
+}
+
+/* ---------- Hadith (Bukhari / Muslim: available in AR, EN, UR, BN) ---------- */
+const hURL = (lang, book, n) => `https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/${L3[lang]}-${book}/${n}.min.json`;
+function hText(j){
+  const arr = j.hadiths || j.hadith || [];
+  const h = Array.isArray(arr) ? arr[0] : arr;
+  return h && h.text ? cleanText(h.text) : "";
+}
+async function fetchHadith(){
+  for (let attempt = 0; attempt < 12; attempt++){
+    const b = CONFIG.hadithBooks[Math.floor(Math.random() * CONFIG.hadithBooks.length)];
+    const n = 1 + Math.floor(Math.random() * b.max);
+    let en;
+    try { en = hText(await getJSON(hURL("en", b.key, n))); } catch(e){ continue; }
+    if (en.length < 60 || en.length > 420) continue;             // skip fragments and very long narrations
+    const others = await Promise.allSettled(["ar","ur","bn"].map(l => getJSON(hURL(l, b.key, n))));
+    const [ar, ur, bn] = others.map(r => r.status === "fulfilled" ? hText(r.value) : "");
+    if (!ar || ar.length > 650) continue;
+    return { ar, tr: { en, ur, bn }, ref: `${b.name} · Hadith ${n}`, refAr: "" };
+  }
+  throw new Error("no hadith");
+}
+
+/* ---------- rendering + auto-fit ---------- */
+function fitScale(card){
+  const body = card.querySelector(".card-body"), inner = card.querySelector(".inner");
+  let s = 1; card.style.setProperty("--fs", s);
+  while (inner.offsetHeight > body.clientHeight && s > 0.4){ s -= 0.04; card.style.setProperty("--fs", s); }
+  return s;
+}
+function setTrans(card, lang){
+  const el = card.querySelector(".trans");
+  el.className = "trans " + lang;
+  el.lang = lang;
+  el.textContent = card._item.tr[lang];
+  card.querySelectorAll(".langs span").forEach(sp => sp.classList.toggle("on", sp.dataset.l === lang));
+}
+function renderCard(id, item){
+  const card = $(id);
+  card._item = item;
+  card._langs = CONFIG.langs.filter(l => item.tr && item.tr[l]);
+  card._li = 0;
+  card.querySelector(".arabic").textContent = item.ar;
+  card.querySelector(".ref").innerHTML = item.ref + (item.refAr ? ` &nbsp;·&nbsp; <span class="ar" lang="ar">${item.refAr}</span>` : "");
+  card.querySelector(".langs").innerHTML = card._langs.length > 1
+    ? card._langs.map(l => `<span data-l="${l}">${CONFIG.langLabels[l]}</span>`).join("") : "";
+  // size text so the LONGEST translation fits, so Arabic doesn't jump size on rotation
+  let s = 1;
+  if (!card._langs.length) { card.querySelector(".trans").textContent = ""; s = fitScale(card); }
+  card._langs.forEach(l => { setTrans(card, l); s = Math.min(s, fitScale(card)); });
+  card.style.setProperty("--fs", s);
+  if (card._langs.length) setTrans(card, card._langs[0]);
+}
+function rotateTranslations(){
+  ["ayahCard","hadithCard"].forEach(id => {
+    const card = $(id);
+    if (!card._langs || card._langs.length < 2) return;
+    const el = card.querySelector(".trans");
+    el.classList.add("fade");
+    setTimeout(() => {
+      card._li = (card._li + 1) % card._langs.length;
+      setTrans(card, card._langs[card._li]);
+    }, 800);
+  });
+}
+
+let contentRetry = null;
+async function refreshContent(){
+  const d = new Date();
+  const hourKey = `${d.toDateString()} ${d.getHours()}`;
+  const cache = store.get("content");
+  if (cache && cache.hour === hourKey) { renderCard("ayahCard", cache.ayah); renderCard("hadithCard", cache.hadith); return; }
+
+  let ayah = null, hadith = null;
+  try { ayah = await fetchAyah(); } catch(e){}
+  try { hadith = await fetchHadith(); } catch(e){}
+
+  const show = {
+    ayah:   ayah   || (cache && cache.ayah)   || FALLBACK.ayah,
+    hadith: hadith || (cache && cache.hadith) || FALLBACK.hadith
+  };
+  renderCard("ayahCard", show.ayah);
+  renderCard("hadithCard", show.hadith);
+
+  if (ayah && hadith) store.set("content", { hour: hourKey, ...show });
+  else { clearTimeout(contentRetry); contentRetry = setTimeout(refreshContent, 5 * 60000); }  // retry in 5 min
+}
+
+/* ---------- start ---------- */
+(async function init(){
+  initBackgrounds();
+  loadTimings();
+  tick(); setInterval(tick, 1000);
+  // make sure all four scripts' fonts are loaded before measuring text size
+  const fontLoads = ['1em "Amiri Quran"', '1em "Amiri"', '1em "Noto Nastaliq Urdu"', '1em "Noto Sans Bengali"', '1em "Inter"']
+    .map(f => document.fonts.load(f, "ابجد اردو বাংলা Aa").catch(() => {}));
+  await Promise.race([Promise.all(fontLoads), new Promise(r => setTimeout(r, 8000))]);
+  await refreshContent();
+  setInterval(rotateTranslations, CONFIG.translationSeconds * 1000);
+})();
+</script>
+</body>
+</html>

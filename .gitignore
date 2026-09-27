@@ -1,0 +1,12 @@
+# Generated per-device config (contains your coordinates)
+web/config.js
+athan.conf
+
+# Media is downloaded at install time (see scripts/fetch-media.sh), not committed
+web/bg/*
+!web/bg/.gitkeep
+*.mp3
+*.ogg
+*.oga
+
+.DS_Store

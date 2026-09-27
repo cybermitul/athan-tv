@@ -1,0 +1,22 @@
+# /etc/default/athan -- single source of truth for athan-tv.
+# After editing, run:  /opt/athan/apply-config.sh && systemctl restart lightdm
+
+# ---- Location & calculation (https://aladhan.com/prayer-times-api) ----
+LATITUDE=40.7128
+LONGITUDE=-74.0060
+METHOD=2            # 2 = ISNA (North America), 3 = MWL, 4 = Umm al-Qura, 5 = Egyptian ...
+SCHOOL=0            # 0 = standard Asr, 1 = Hanafi Asr
+TUNE=""             # optional per-prayer minute offsets, e.g. "0,2,0,0,0,0,0,0,0"
+
+# ---- Display ----
+TRANSLATION_LANGS="en ur bn"   # any of: en ur bn  (Arabic is always shown)
+
+# ---- Audio ----
+# Find your device: grep -H "monitor_present\|monitor_name" /proc/asound/card*/eld*
+#   HDMI/DisplayPort:  hdmi:CARD=HDMI,DEV=0
+#   Headphone jack:    plughw:CARD=PCH,DEV=0
+ALSA_DEVICE="hdmi:CARD=HDMI,DEV=0"
+AUDIO=/opt/athan/adhan.mp3
+SCALE=""                       # mpg123 volume scale (32768 = 100%). Empty = full volume.
+FAJR_AUDIO=/opt/athan/adhan-fajr.mp3   # used for Fajr if the file exists
+FAJR_SCALE=""                  # e.g. 13000 (~40%) for a quieter Fajr

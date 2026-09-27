@@ -1,0 +1,9 @@
+services:
+  web:
+    image: nginx:alpine
+    container_name: athan-display
+    restart: unless-stopped
+    ports:
+      - "8080:80"            # use "127.0.0.1:8080:80" to hide the page from the rest of the LAN
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
