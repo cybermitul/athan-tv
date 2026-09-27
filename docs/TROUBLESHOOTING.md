@@ -56,3 +56,26 @@ The autostart passes `--disable-features=Translate`. If you launched Chromium so
 ## `sudo: command not found`
 
 Debian's netinst doesn't install sudo when a root password is set. Use `su -`, or install it with `apt install sudo && usermod -aG sudo youruser`, then log in again.
+
+## News ticker doesn't appear
+
+The ticker stays hidden until `news.json` has headlines. Run the fetcher by hand to see each feed's result:
+
+```bash
+/opt/athan/fetch-news.py
+cat /opt/athan/web/news.json | jq '.items | length'
+```
+
+A feed that prints `FAILED` has moved or is blocking the request; replace its URL in `NEWS_FEEDS` in `/etc/default/athan`. Other feeds keep working, and if all fail the previous headlines are kept.
+
+## Weather block or alert bar missing
+
+```bash
+/opt/athan/fetch-weather.py
+```
+
+It prints the current conditions and how many alerts and notices it found. The weather block hides itself if `weather.json` is more than 3 hours old, so the TV never shows a stale forecast. `NWS alerts FAILED` alone is harmless: the forecast still shows and alerts return on the next run. The NWS only covers US locations.
+
+## Emoji weather icons show as empty boxes
+
+Install the colour emoji font and restart the display: `apt install fonts-noto-color-emoji && systemctl restart lightdm`.

@@ -11,6 +11,19 @@ TUNE=""             # optional per-prayer minute offsets, e.g. "0,2,0,0,0,0,0,0,
 # ---- Display ----
 TRANSLATION_LANGS="en ur bn"   # any of: en ur bn  (Arabic is always shown)
 
+# ---- Weather & alerts (Open-Meteo + US National Weather Service, uses LATITUDE/LONGITUDE) ----
+WEATHER=true                   # true/false
+
+# ---- US local news ticker ----
+US_NEWS_TICKER=true            # true/false
+US_NEWS_LABEL="NYC LOCAL"
+US_NEWS_FEEDS="NYT New York|https://rss.nytimes.com/services/xml/rss/nyt/NYRegion.xml;Gothamist|https://gothamist.com/feed"
+
+# ---- Bengali news ticker ----
+NEWS_TICKER=true               # true/false
+# Feeds as "Name|URL;Name|URL" (RSS or Atom). Headlines only are shown.
+NEWS_FEEDS="BBC বাংলা|https://feeds.bbci.co.uk/bengali/rss.xml;DW বাংলা|https://rss.dw.com/rdf/rss-ben-all"
+
 # ---- Audio ----
 # Find your device: grep -H "monitor_present\|monitor_name" /proc/asound/card*/eld*
 #   HDMI/DisplayPort:  hdmi:CARD=HDMI,DEV=0

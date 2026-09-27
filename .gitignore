@@ -1,5 +1,7 @@
 # Generated per-device config (contains your coordinates)
 web/config.js
+web/news.json
+web/weather.json
 athan.conf
 
 # Media is downloaded at install time (see scripts/fetch-media.sh), not committed
@@ -10,3 +12,4 @@ web/bg/*
 *.oga
 
 .DS_Store
+__pycache__/

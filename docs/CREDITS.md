@@ -11,4 +11,8 @@ Media is **not** stored in this repository. `scripts/fetch-media.sh` downloads i
 | bg/5.jpg | [Sri Lanka Colombo Grand Mosque Landscape.jpg](https://commons.wikimedia.org/wiki/File:Sri_Lanka_Colombo_Grand_Mosque_Landscape.jpg) | CC BY-SA 4.0 |
 | adhan.mp3 | [Beautiful adhan.ogg](https://commons.wikimedia.org/wiki/File:Beautiful_adhan.ogg) (converted to MP3) | CC0 |
 
+News headlines are fetched at runtime from each publisher's public RSS feed and shown with the source name; article text is not copied.
+
+Weather data by [Open-Meteo](https://open-meteo.com) (CC BY 4.0). Alerts from the US National Weather Service (public domain).
+
 Text sources: Quran text and translations via [alquran.cloud](https://alquran.cloud/); hadith via [fawazahmed0/hadith-api](https://github.com/fawazahmed0/hadith-api); prayer times via [Aladhan](https://aladhan.com/).

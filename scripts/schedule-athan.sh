@@ -36,9 +36,10 @@ if [ -z "$JSON" ]; then
   exit 1
 fi
 
-# Remove adhan jobs from an earlier run (identified by the player path)
+# Remove adhan jobs from an earlier run (this version's player, or older versions that
+# called mpg123 on adhan.mp3 directly) so re-runs never double up
 for j in $(atq | awk '{print $1}'); do
-  if at -c "$j" 2>/dev/null | grep -q "$PLAYER"; then atrm "$j"; fi
+  if at -c "$j" 2>/dev/null | grep -qE "$PLAYER|/opt/athan/adhan\.mp3"; then atrm "$j"; fi
 done
 
 log "scheduling for $DATE"
