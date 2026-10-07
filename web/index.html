@@ -67,7 +67,43 @@
   .prow.active .pname{color:var(--accent)}
 
   /* ---------- ayah / hadith cards ---------- */
-  .right{display:grid;grid-template-rows:1fr 1.15fr;gap:1.8vh;min-height:0}
+  .right{position:relative;min-height:0}
+  .slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity 1.2s ease,visibility 1.2s}
+  .slide.on{opacity:1;visibility:visible}
+  #slideQuran{display:grid;grid-template-rows:1fr 1.15fr;gap:1.8vh}
+  .slide > .famcard{height:100%}
+  .dots{position:absolute;right:1.2vw;bottom:-1.2vh;display:flex;gap:.4vw;z-index:3}
+  .dots i{width:.5vw;height:.5vw;border-radius:50%;background:rgba(255,255,255,.3);transition:background .6s}
+  .dots i.on{background:var(--gold)}
+
+  /* ---------- family: week ---------- */
+  .famupd{font-size:.8vw;color:var(--muted)}
+  .week{flex:1;display:flex;flex-direction:column;gap:.5vh;min-height:0}
+  .wday{flex:1;display:grid;grid-template-columns:10.5vw 1fr;align-items:center;padding:0 1vw;border-radius:.6vw;border:1px solid transparent;min-height:0;overflow:hidden}
+  .wday + .wday{box-shadow:0 -1px 0 rgba(255,255,255,.06)}
+  .wday.today{background:rgba(95,212,168,.14);border-color:var(--accent);box-shadow:none}
+  .wlabel{font-size:1.45vw;font-weight:700;line-height:1.15}
+  .wday.today .wlabel{color:var(--accent)}
+  .wlabel small{display:block;font-size:.66em;color:var(--muted);font-weight:500}
+  .wevs{display:flex;flex-wrap:wrap;align-items:center;gap:.4vh 1.4vw;overflow:hidden;max-height:100%}
+  .ev{font-size:1.35vw;white-space:nowrap}
+  .ev .t{color:var(--gold);font-weight:600;margin-right:.45vw;font-variant-numeric:tabular-nums}
+  .ev.allday{background:rgba(233,196,106,.2);padding:.2vh .7vw;border-radius:.4vw}
+  .none{font-size:1.1vw;color:rgba(244,241,234,.35)}
+  .more{font-size:1vw;color:var(--muted)}
+
+  /* ---------- family: lists ---------- */
+  .lists{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2vw;min-height:0;padding-top:.5vh}
+  .lcol{display:flex;flex-direction:column;min-height:0}
+  .lname{display:flex;justify-content:space-between;align-items:baseline;font-size:1.7vw;font-weight:700;padding-bottom:.8vh;margin-bottom:1vh;border-bottom:2px solid rgba(233,196,106,.45)}
+  .lname .n{font-size:.62em;color:var(--muted);font-weight:500}
+  .litems{display:flex;flex-direction:column;gap:.9vh;overflow:hidden}
+  .li{display:flex;align-items:center;gap:.9vw;font-size:1.5vw;line-height:1.25}
+  .box{flex:none;width:1.3vw;height:1.3vw;border:.16vw solid rgba(244,241,234,.55);border-radius:.3vw}
+  .li.high .box{border-color:#f4b942}
+  .li .due{margin-left:auto;padding-left:1vw;font-size:.72em;color:var(--muted);white-space:nowrap}
+  .li .due.over{color:#f08080}
+  .alldone{font-size:1.3vw;color:var(--accent)}
   .card{display:flex;flex-direction:column;padding:2.2vh 2vw;min-height:0;--fs:1}
   .card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:1vh}
   .card-title{font-size:.95vw;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:600}
@@ -155,6 +191,7 @@
     </section>
 
     <section class="right">
+      <div class="slide on" id="slideQuran">
       <div class="card glass" id="ayahCard">
         <div class="card-h"><div class="card-title">Ayah of the Hour</div><div class="langs"></div></div>
         <div class="card-body"><div class="inner">
@@ -171,6 +208,20 @@
         </div></div>
         <div class="ref"></div>
       </div>
+      </div>
+      <div class="slide" id="slideWeek">
+        <div class="card glass famcard">
+          <div class="card-h"><div class="card-title">This Week</div><div class="famupd" id="weekUpd"></div></div>
+          <div class="week" id="week"></div>
+        </div>
+      </div>
+      <div class="slide" id="slideLists">
+        <div class="card glass famcard">
+          <div class="card-h"><div class="card-title">Lists</div><div class="famupd" id="listsUpd"></div></div>
+          <div class="lists" id="lists"></div>
+        </div>
+      </div>
+      <div class="dots" id="dots"></div>
     </section>
   </main>
 
@@ -219,6 +270,8 @@ const DEFAULTS = {
   news: true,                     // Bengali headline ticker (reads news.json written by fetch-news.py)
   usNews: true,                   // US local headline ticker (same news.json)
   usNewsLabel: "NYC LOCAL",
+  family: true,                   // calendar + lists slides (reads family.json written by fetch-family.py)
+  slideSeconds: { quran: 45, week: 20, lists: 20 },
   weather: true,                  // weather + alerts (reads weather.json written by fetch-weather.py)
   alertSeconds: 12,               // rotate between multiple alerts
   newsSpeed: 0.055,               // scroll speed, in screen-widths per second
@@ -557,10 +610,65 @@ function rotateAlerts(){
   setTimeout(() => { alertIdx++; showAlert(); $("aText").style.opacity = 1; }, 600);
 }
 
+/* ---------- family calendar + lists (slides 2 and 3) ---------- */
+let fam = null;
+async function loadFamily(){
+  try {
+    const r = await fetch("family.json?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    if (Date.now()/1000 - (j.updated || 0) > 24 * 3600) { fam = null; return; }   // a day old: stop showing it
+    fam = j;
+    const upd = new Date(j.updated * 1000);
+    const updTxt = `Updated ${upd.getHours() % 12 || 12}:${pad(upd.getMinutes())} ${upd.getHours() >= 12 ? "PM" : "AM"}`;
+    $("weekUpd").textContent = updTxt; $("listsUpd").textContent = updTxt;
+
+    $("week").innerHTML = (j.days || []).map(d => {
+      const evs = d.events.map(e => e.time
+        ? `<span class="ev"><span class="t">${e.time}</span>${escHTML(e.title)}</span>`
+        : `<span class="ev allday">${escHTML(e.title)}</span>`).join("");
+      const more = d.total > d.events.length ? `<span class="more">+${d.total - d.events.length} more</span>` : "";
+      return `<div class="wday${d.today ? " today" : ""}">
+                <div class="wlabel">${escHTML(d.label)}<small>${escHTML(d.sub)}</small></div>
+                <div class="wevs">${evs || '<span class="none">—</span>'}${more}</div>
+              </div>`;
+    }).join("");
+
+    $("lists").innerHTML = (j.lists || []).map(l => {
+      const items = l.items.map(i => `<div class="li${i.high ? " high" : ""}"><span class="box"></span>${escHTML(i.title)}` +
+        (i.due ? `<span class="due${i.due === "Overdue" ? " over" : ""}">${escHTML(i.due)}</span>` : "") + `</div>`).join("");
+      const more = l.total > l.items.length ? `<div class="more">+${l.total - l.items.length} more</div>` : "";
+      return `<div class="lcol"><div class="lname">${escHTML(l.name)}<span class="n">${l.total} item${l.total === 1 ? "" : "s"}</span></div>
+              <div class="litems">${items || '<div class="alldone">All done ✓</div>'}${more}</div></div>`;
+    }).join("");
+  } catch(e) { /* keep last shown */ }
+}
+
+let slideIdx = 0;
+function availableSlides(){
+  const s = ["quran"];
+  if (CONFIG.family && fam) {
+    if ((fam.days || []).some(d => d.total > 0)) s.push("week");
+    if ((fam.lists || []).length) s.push("lists");
+  }
+  return s;
+}
+function nextSlide(){
+  const avail = availableSlides();
+  slideIdx = (slideIdx + 1) % avail.length;
+  const cur = avail[slideIdx];
+  [["quran","slideQuran"],["week","slideWeek"],["lists","slideLists"]].forEach(([k, id]) => $(id).classList.toggle("on", k === cur));
+  $("dots").innerHTML = avail.length > 1 ? avail.map((k, i) => `<i class="${i === slideIdx ? "on" : ""}"></i>`).join("") : "";
+  setTimeout(nextSlide, (CONFIG.slideSeconds[cur] || 20) * 1000);
+}
+
+
 /* ---------- start ---------- */
 (async function init(){
   initBackgrounds();
   if (CONFIG.news || CONFIG.usNews) { loadNews(); setInterval(loadNews, 5 * 60000); }
+  if (CONFIG.family) { loadFamily(); setInterval(loadFamily, 2 * 60000); }
+  slideIdx = -1; setTimeout(nextSlide, 0);
   if (CONFIG.weather) { loadWeather(); setInterval(loadWeather, 5 * 60000); setInterval(rotateAlerts, CONFIG.alertSeconds * 1000); }
   document.querySelector("#tickerUS .tlabel").lastChild.textContent = CONFIG.usNewsLabel;
   loadTimings();

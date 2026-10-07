@@ -2,6 +2,7 @@
 web/config.js
 web/news.json
 web/weather.json
+web/family.json
 athan.conf
 
 # Media is downloaded at install time (see scripts/fetch-media.sh), not committed
@@ -13,3 +14,4 @@ web/bg/*
 
 .DS_Store
 __pycache__/
+server/radicale/users

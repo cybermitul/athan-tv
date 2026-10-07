@@ -25,7 +25,7 @@ apt-get update -qq
 DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
   xserver-xorg openbox lightdm chromium unclutter \
   mpg123 ffmpeg alsa-utils \
-  curl jq at cron file ca-certificates python3 \
+  curl jq at cron file ca-certificates python3 python3-caldav \
   fonts-noto-core fonts-hosny-amiri fonts-noto-color-emoji >/dev/null
 
 step "2/8 Installing Docker (if missing)"
@@ -38,7 +38,7 @@ step "3/8 Copying files to $ATHAN"
 install -d "$ATHAN/web/bg"
 install -m 644 "$REPO/web/index.html" "$ATHAN/web/index.html"
 install -m 644 "$REPO/docker-compose.yml" "$ATHAN/docker-compose.yml"
-for s in schedule-athan.sh play-adhan.sh apply-config.sh fetch-media.sh fetch-news.py fetch-weather.py; do
+for s in schedule-athan.sh play-adhan.sh apply-config.sh fetch-media.sh fetch-news.py fetch-weather.py fetch-family.py; do
   install -m 755 "$REPO/scripts/$s" "$ATHAN/$s"
 done
 install -m 644 "$REPO/config/logrotate-athan" /etc/logrotate.d/athan
@@ -50,6 +50,7 @@ if [ ! -f /etc/default/athan ]; then
 else
   echo "  Keeping existing /etc/default/athan"
 fi
+chmod 600 /etc/default/athan    # may hold the CalDAV password
 "$ATHAN/apply-config.sh"
 
 step "4/8 Downloading backgrounds and adhan"
@@ -66,18 +67,21 @@ install -d -o "$KIOSK_USER" -g "$KIOSK_USER" "$KIOSK_HOME/.config" "$KIOSK_HOME/
 install -m 644 -o "$KIOSK_USER" -g "$KIOSK_USER" "$REPO/config/openbox-autostart" "$KIOSK_HOME/.config/openbox/autostart"
 usermod -aG audio,video "$KIOSK_USER"
 
-step "7/8 Scheduling adhan, news and weather (root crontab)"
+step "7/8 Scheduling adhan, news, weather and family data (root crontab)"
 systemctl enable --now atd cron >/dev/null
-( crontab -l 2>/dev/null | grep -vE 'schedule-athan.sh|fetch-news.py|fetch-weather.py' || true
+( crontab -l 2>/dev/null | grep -vE 'schedule-athan.sh|fetch-news.py|fetch-weather.py|fetch-family.py' || true
   echo "5 0 * * * $ATHAN/schedule-athan.sh"
   echo "@reboot sleep 60 && $ATHAN/schedule-athan.sh"
   echo "*/15 * * * * $ATHAN/fetch-news.py >/dev/null 2>&1"
   echo "@reboot sleep 90 && $ATHAN/fetch-news.py >/dev/null 2>&1"
   echo "*/10 * * * * $ATHAN/fetch-weather.py >/dev/null 2>&1"
   echo "@reboot sleep 75 && $ATHAN/fetch-weather.py >/dev/null 2>&1"
+  echo "*/5 * * * * $ATHAN/fetch-family.py >/dev/null 2>&1"
+  echo "@reboot sleep 80 && $ATHAN/fetch-family.py >/dev/null 2>&1"
 ) | crontab -
 "$ATHAN/fetch-news.py" || echo "  (news feeds unreachable right now -- cron retries every 15 min)"
 "$ATHAN/fetch-weather.py" || echo "  (weather unreachable right now -- cron retries every 10 min)"
+"$ATHAN/fetch-family.py" || echo "  (family calendar not reachable yet -- see docs/FAMILY.md)"
 "$ATHAN/schedule-athan.sh" || echo "  (could not fetch times now -- cron will retry)"
 atq || true
 

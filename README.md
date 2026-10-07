@@ -12,6 +12,7 @@ Everything runs locally except three free, keyless APIs: [Aladhan](https://aladh
 - Ayah of the Hour and Hadith of the Hour (Sahih al-Bukhari / Sahih Muslim) in Arabic, with English, Urdu, and Bengali translations rotating underneath; text auto-sizes to fit
 - Current weather in the header: temperature, feels-like, high/low, rain chance, wind, humidity (Open-Meteo)
 - Alert bar for official National Weather Service watches and warnings, plus heads-ups for rain in the next 12 hours, freezing lows, and very hot days; colour-coded by severity
+- Rotating right panel: Ayah and Hadith, then **This Week** (family calendar, 7 days) and **Lists** (groceries, to-do), read from a self-hosted CalDAV server so family iPhones use the built-in Calendar and Reminders apps (see [docs/FAMILY.md](docs/FAMILY.md))
 - Two scrolling headline tickers: NYC local news (NYT New York, Gothamist) and Bengali news (BBC বাংলা, DW বাংলা); any RSS, RDF or Atom feed works, refreshed every 15 minutes
 - Background photos that crossfade every 10 minutes
 - Adhan at all five prayers via `at` jobs queued nightly by cron, with an optional separate recording and volume for Fajr
@@ -30,7 +31,8 @@ LightDM autologin ──► Openbox ──► Chromium --kiosk ──► http://
                                                          │
                                   index.html ──► Aladhan / alquran.cloud / hadith-api
                                                  ├─► news.json    ◄── fetch-news.py    (cron */15) ◄── RSS feeds
-                                                 └─► weather.json ◄── fetch-weather.py (cron */10) ◄── Open-Meteo + api.weather.gov
+                                                 ├─► weather.json ◄── fetch-weather.py (cron */10) ◄── Open-Meteo + api.weather.gov
+                                                 └─► family.json  ◄── fetch-family.py  (cron */5)  ◄── Radicale (CalDAV) on Unraid
 ```
 
 News and weather are fetched by the box, not the browser: news sites don't send CORS headers, so a page can't read their feeds directly. `fetch-news.py` writes only headlines and source names to `web/news.json`, atomically, and keeps the previous file if every feed fails.
@@ -80,6 +82,8 @@ Edit `/etc/default/athan`, then apply:
 | `SCHOOL` | 0 = standard Asr, 1 = Hanafi Asr |
 | `TUNE` | Optional per-prayer minute offsets |
 | `TRANSLATION_LANGS` | Any of `en ur bn`; Arabic is always shown |
+| `FAMILY`, `CALDAV_URL`, `CALDAV_USER`, `CALDAV_PASS` | Family calendar and lists slides; see [docs/FAMILY.md](docs/FAMILY.md) |
+| `FAMILY_DAYS`, `FAMILY_LISTS` | Days of calendar to show; which reminder lists, in order |
 | `WEATHER` | `true`/`false` for the weather block and alert bar |
 | `US_NEWS_TICKER`, `US_NEWS_LABEL`, `US_NEWS_FEEDS` | English local-news ticker: on/off, label, feeds |
 | `NEWS_TICKER` | `true`/`false` to show the Bengali headline ticker |
@@ -108,6 +112,7 @@ tail -20 /var/log/athan-schedule.log     # scheduler and playback log
 /opt/athan/schedule-athan.sh             # re-queue today's prayers
 /opt/athan/fetch-news.py                 # refresh news headlines now
 /opt/athan/fetch-weather.py              # refresh weather and alerts now
+/opt/athan/fetch-family.py               # refresh calendar and lists now
 docker compose -f /opt/athan/docker-compose.yml ps
 systemctl restart lightdm                # restart the kiosk display
 ```
@@ -123,6 +128,8 @@ scripts/apply-config.sh   /etc/default/athan -> web/config.js
 scripts/fetch-media.sh    downloads backgrounds and adhan
 scripts/fetch-news.py     RSS/RDF/Atom headlines -> web/news.json
 scripts/fetch-weather.py  Open-Meteo + NWS alerts -> web/weather.json
+scripts/fetch-family.py   CalDAV calendar + reminder lists -> web/family.json
+server/radicale/          Radicale config, rights and compose file for Unraid
 config/                   Openbox autostart, LightDM autologin, logrotate
 athan.conf.example        template for /etc/default/athan
 docker-compose.yml        nginx:alpine serving web/ on :8080

@@ -1,0 +1,16 @@
+# Reference compose file for Radicale (equivalent to the Unraid "Add Container" fields in docs/FAMILY.md).
+services:
+  radicale:
+    image: tomsquest/docker-radicale
+    container_name: radicale
+    restart: unless-stopped
+    init: true
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    cap_add: [SETUID, SETGID, CHOWN, KILL]
+    ports:
+      - "5232:5232"
+    volumes:
+      - /mnt/user/appdata/radicale/data:/data
+      - /mnt/user/appdata/radicale/config:/config:ro

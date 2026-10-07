@@ -11,6 +11,15 @@ TUNE=""             # optional per-prayer minute offsets, e.g. "0,2,0,0,0,0,0,0,
 # ---- Display ----
 TRANSLATION_LANGS="en ur bn"   # any of: en ur bn  (Arabic is always shown)
 
+# ---- Family calendar + lists (CalDAV / Radicale on Unraid) -- see docs/FAMILY.md ----
+# This file holds a password: install.sh sets it to mode 600 (root only).
+FAMILY=true
+CALDAV_URL="http://192.168.1.3:5232/family/"   # the shared family account's home
+CALDAV_USER=tv                                  # read-only account
+CALDAV_PASS=""
+FAMILY_DAYS=7
+FAMILY_LISTS="Groceries, To-Do"                 # reminder lists to show, in order (empty = all)
+
 # ---- Weather & alerts (Open-Meteo + US National Weather Service, uses LATITUDE/LONGITUDE) ----
 WEATHER=true                   # true/false
 

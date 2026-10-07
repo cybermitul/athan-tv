@@ -4,6 +4,7 @@ services:
     container_name: athan-display
     restart: unless-stopped
     ports:
-      - "8080:80"            # use "127.0.0.1:8080:80" to hide the page from the rest of the LAN
+      - "127.0.0.1:8080:80"  # only the kiosk itself can load the page (it now includes family calendar data).
+                               # To preview from another machine temporarily, change to "8080:80".
     volumes:
       - ./web:/usr/share/nginx/html:ro

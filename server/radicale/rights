@@ -1,0 +1,29 @@
+# Radicale rights  (/mnt/user/appdata/radicale/config/rights  ->  /config/rights)
+# Rules are checked top to bottom; the first match wins.
+
+# TV kiosk: read-only on the family account's calendars and lists -- nothing else.
+[tv-family]
+user: tv
+collection: family(/[^/]+)?
+permissions: Rr
+
+[tv-deny]
+user: tv
+collection: .*
+permissions:
+
+# Everyone else: allow principal discovery, full access to their own collections.
+[root]
+user: .+
+collection:
+permissions: R
+
+[principal]
+user: .+
+collection: {user}
+permissions: RW
+
+[collections]
+user: .+
+collection: {user}/[^/]+
+permissions: rw

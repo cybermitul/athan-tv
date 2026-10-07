@@ -37,7 +37,7 @@ Check the box can reach the API:
 curl -s "https://api.aladhan.com/v1/timings/$(date +%d-%m-%Y)?latitude=40.7128&longitude=-74.0060&method=2" | jq .data.timings
 ```
 
-Previewing `index.html` inside a sandboxed viewer (for example a chat app's file preview) always fails, because those viewers block outside network requests. Test at `http://<box-ip>:8080` instead.
+Previewing `index.html` inside a sandboxed viewer (for example a chat app's file preview) always fails, because those viewers block outside network requests. Test with `curl http://localhost:8080` on the box, or temporarily set the port to `"8080:80"` in `/opt/athan/docker-compose.yml`.
 
 ## TV shows a login screen or a black screen
 
@@ -79,3 +79,14 @@ It prints the current conditions and how many alerts and notices it found. The w
 ## Emoji weather icons show as empty boxes
 
 Install the colour emoji font and restart the display: `apt install fonts-noto-color-emoji && systemctl restart lightdm`.
+
+## Calendar or Lists slide never appears
+
+```bash
+/opt/athan/fetch-family.py
+```
+
+- `CALDAV_URL / CALDAV_USER / CALDAV_PASS not set`: fill them in `/etc/default/athan` (docs/FAMILY.md step 5).
+- `ConnectionError` or a timeout: the firewall rule is missing, or Radicale isn't running. Test with `curl -u tv -X PROPFIND -H "Depth: 1" http://192.168.1.3:5232/family/`.
+- `401`: wrong tv password. `403`: the rights file doesn't give `tv` read access; check the `[tv-family]` rule comes first.
+- It succeeds but reports 0 events and no lists: nothing has been created under the `family` account yet (docs/FAMILY.md step 3.5).

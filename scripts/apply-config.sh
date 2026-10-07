@@ -24,7 +24,8 @@ window.ATHAN_CONFIG = {
   news: ${NEWS_TICKER:-true},
   usNews: ${US_NEWS_TICKER:-true},
   usNewsLabel: "${US_NEWS_LABEL:-NYC LOCAL}",
-  weather: ${WEATHER:-true}
+  weather: ${WEATHER:-true},
+  family: ${FAMILY:-true}
 };
 JS
 chmod 644 "$WEB/config.js"
