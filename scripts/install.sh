@@ -39,6 +39,7 @@ step "3/8 Copying files to $ATHAN"
 install -d "$ATHAN/web/bg"
 install -m 644 "$REPO/web/index.html" "$ATHAN/web/index.html"
 install -m 644 "$REPO/docker-compose.yml" "$ATHAN/docker-compose.yml"
+install -m 644 "$REPO/config/nginx-default.conf" "$ATHAN/nginx.conf"
 for s in schedule-athan.sh play-adhan.sh apply-config.sh fetch-media.sh fetch-news.py fetch-weather.py fetch-family.py; do
   install -m 755 "$REPO/scripts/$s" "$ATHAN/$s"
 done
