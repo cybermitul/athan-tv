@@ -73,7 +73,7 @@ def main():
     days = int(conf.get("FAMILY_DAYS", "7") or 7)
     want_lists = [s.strip().lower() for s in conf.get("FAMILY_LISTS", "").split(",") if s.strip()]
 
-    client = caldav.DAVClient(url=url, username=user, password=pw, timeout=20)
+    client = caldav.DAVClient(url=url, username=user, password=pw, timeout=20, ssl_verify_cert=conf.get("CALDAV_CA") or True)
     collections = caldav.CalendarSet(client=client, url=url).calendars()
 
     today = dt.date.today()
