@@ -9,6 +9,7 @@
 #   DISABLE_IOMMU=yes      add intel_iommu=off to GRUB (fixes silent HDMI audio on some
 #                          Haswell/4th-gen Intel boxes -- see docs/TROUBLESHOOTING.md)
 set -euo pipefail
+export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"   # works even after plain `su`
 
 [ "$(id -u)" -eq 0 ] || { echo "Run as root (su -)"; exit 1; }
 KIOSK_USER="${KIOSK_USER:-${SUDO_USER:-}}"
