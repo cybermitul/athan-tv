@@ -22,6 +22,7 @@ FAMILY_LISTS="Groceries, To-Do"                 # reminder lists to show, in ord
 
 # ---- Weather & alerts (Open-Meteo + US National Weather Service, uses LATITUDE/LONGITUDE) ----
 WEATHER=true                   # true/false
+FORECAST=true                  # 14-day forecast slide (needs WEATHER=true)
 
 # ---- US local news ticker ----
 US_NEWS_TICKER=true            # true/false

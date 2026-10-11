@@ -12,7 +12,7 @@ Everything runs locally except three free, keyless APIs: [Aladhan](https://aladh
 - Ayah of the Hour and Hadith of the Hour (Sahih al-Bukhari / Sahih Muslim) in Arabic, with English, Urdu, and Bengali translations rotating underneath; text auto-sizes to fit
 - Current weather in the header: temperature, feels-like, high/low, rain chance, wind, humidity (Open-Meteo)
 - Alert bar for official National Weather Service watches and warnings, plus heads-ups for rain in the next 12 hours, freezing lows, and very hot days; colour-coded by severity
-- Rotating right panel: Ayah and Hadith, then **This Week** (family calendar, 7 days) and **Lists** (groceries, to-do), read from a self-hosted CalDAV server so family iPhones use the built-in Calendar and Reminders apps (see [docs/FAMILY.md](docs/FAMILY.md))
+- Rotating right panel, one full-size slide at a time: **Ayah of the Hour** and **Hadith of the Hour** (Arabic with English, Urdu and Bengali translations, each language shown once per pass), a **14-Day Forecast**, then **This Week** (family calendar) and **Lists** (groceries, to-do) from a self-hosted CalDAV server so family iPhones use the built-in Calendar and Reminders apps (see [docs/FAMILY.md](docs/FAMILY.md))
 - Two scrolling headline tickers: NYC local news (NYT New York, Gothamist) and Bengali news (BBC বাংলা, DW বাংলা); any RSS, RDF or Atom feed works, refreshed every 15 minutes
 - Background photos that crossfade every 10 minutes
 - Adhan at all five prayers via `at` jobs queued nightly by cron, with an optional separate recording and volume for Fajr
@@ -85,6 +85,7 @@ Edit `/etc/default/athan`, then apply:
 | `FAMILY`, `CALDAV_URL`, `CALDAV_USER`, `CALDAV_PASS` | Family calendar and lists slides; see [docs/FAMILY.md](docs/FAMILY.md) |
 | `FAMILY_DAYS`, `FAMILY_LISTS` | Days of calendar to show; which reminder lists, in order |
 | `WEATHER` | `true`/`false` for the weather block and alert bar |
+| `FORECAST` | `true`/`false` for the 14-day forecast slide |
 | `US_NEWS_TICKER`, `US_NEWS_LABEL`, `US_NEWS_FEEDS` | English local-news ticker: on/off, label, feeds |
 | `NEWS_TICKER` | `true`/`false` to show the Bengali headline ticker |
 | `NEWS_FEEDS` | `Name\|URL;Name\|URL` list of RSS/Atom feeds |

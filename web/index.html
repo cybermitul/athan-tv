@@ -70,8 +70,7 @@
   .right{position:relative;min-height:0}
   .slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity 1.2s ease,visibility 1.2s}
   .slide.on{opacity:1;visibility:visible}
-  #slideQuran{display:grid;grid-template-rows:1fr 1.15fr;gap:1.8vh}
-  .slide > .famcard{height:100%}
+  .slide > .card{height:100%}
   .dots{position:absolute;right:1.2vw;bottom:-1.2vh;display:flex;gap:.4vw;z-index:3}
   .dots i{width:.5vw;height:.5vw;border-radius:50%;background:rgba(255,255,255,.3);transition:background .6s}
   .dots i.on{background:var(--gold)}
@@ -106,19 +105,37 @@
   .alldone{font-size:1.3vw;color:var(--accent)}
   .card{display:flex;flex-direction:column;padding:2.2vh 2vw;min-height:0;--fs:1}
   .card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:1vh}
-  .card-title{font-size:.95vw;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  .card-title{font-size:1.1vw;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:600}
   .langs{display:flex;gap:.45vw}
-  .langs span{font-size:.8vw;padding:.25vh .7vw;border-radius:1vw;border:1px solid rgba(255,255,255,.22);color:var(--muted);transition:all .6s}
+  .langs span{font-size:1vw;padding:.25vh .7vw;border-radius:1vw;border:1px solid rgba(255,255,255,.22);color:var(--muted);transition:all .6s}
   .langs span.on{background:var(--gold);color:#1b1b1b;border-color:var(--gold);font-weight:600}
   .card-body{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
-  .inner{width:100%;display:flex;flex-direction:column;gap:1.6vh}
-  .arabic{font-family:var(--ar);direction:rtl;text-align:center;font-size:calc(2.5vw * var(--fs));line-height:1.95;color:#fff;text-shadow:0 .15vw .8vw rgba(0,0,0,.5)}
-  .trans{text-align:center;font-size:calc(1.5vw * var(--fs));line-height:1.5;transition:opacity .8s ease}
+  .inner{width:100%;display:flex;flex-direction:column;gap:3vh}
+  .arabic{font-family:var(--ar);direction:rtl;text-align:center;font-size:calc(4.2vw * var(--fs));line-height:1.9;color:#fff;text-shadow:0 .15vw .8vw rgba(0,0,0,.5)}
+  .trans{text-align:center;font-size:calc(2.4vw * var(--fs));line-height:1.45;transition:opacity .8s ease}
   .trans.fade{opacity:0}
-  .trans.ur{font-family:var(--ur);direction:rtl;font-size:calc(1.4vw * var(--fs));line-height:2.35}
-  .trans.bn{font-family:var(--bn);font-size:calc(1.45vw * var(--fs));line-height:1.6}
-  .ref{text-align:center;font-size:1vw;color:var(--gold);margin-top:1vh;opacity:.9}
+  .trans.ur{font-family:var(--ur);direction:rtl;font-size:calc(2.2vw * var(--fs));line-height:2.3}
+  .trans.bn{font-family:var(--bn);font-size:calc(2.3vw * var(--fs));line-height:1.6}
+  .ref{text-align:center;font-size:1.35vw;color:var(--gold);margin-top:1vh;opacity:.9}
   .ref .ar{font-family:var(--ar);font-size:1.25em}
+
+  /* ---------- 14-day forecast slide ---------- */
+  .fc{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:1fr 1fr;gap:1vh .8vw;min-height:0}
+  .fday{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:1.2vh .4vw;border-radius:.8vw;background:rgba(255,255,255,.04);border:1px solid transparent;min-height:0}
+  .fday.today{background:rgba(95,212,168,.14);border-color:var(--accent)}
+  .fday.wet{background:rgba(110,170,255,.12)}
+  .fday.today.wet{background:rgba(95,212,168,.14)}
+  .fdow{font-size:1.4vw;font-weight:700;line-height:1.1}
+  .fday.today .fdow{color:var(--accent)}
+  .fmd{font-size:.95vw;color:var(--muted)}
+  .ficon{font-family:'Noto Color Emoji',sans-serif;font-size:3vw;line-height:1}
+  .ftemp{font-size:1.7vw;font-weight:700;font-variant-numeric:tabular-nums}
+  .ftemp small{font-size:.7em;color:var(--muted);font-weight:500;margin-left:.3vw}
+  .fbar{position:relative;width:80%;height:.45vh;border-radius:.3vh;background:rgba(255,255,255,.1)}
+  .fbar i{position:absolute;top:0;bottom:0;border-radius:.3vh;background:linear-gradient(90deg,#7cc4ff,#f4b942)}
+  .frain{font-size:1.05vw;color:var(--muted);white-space:nowrap}
+  .fday.wet .frain{color:#9fd0ff;font-weight:600}
+  .fnote{font-size:.85vw;color:var(--muted);text-align:right}
 
   /* ---------- weather (header, centre) ---------- */
   .weather{display:flex;align-items:center;gap:1vw;padding:1vh 1.4vw;text-shadow:0 .2vw 1vw rgba(0,0,0,.6)}
@@ -191,32 +208,40 @@
     </section>
 
     <section class="right">
-      <div class="slide on" id="slideQuran">
-      <div class="card glass" id="ayahCard">
-        <div class="card-h"><div class="card-title">Ayah of the Hour</div><div class="langs"></div></div>
-        <div class="card-body"><div class="inner">
-          <div class="arabic" lang="ar"></div>
-          <div class="trans"></div>
-        </div></div>
-        <div class="ref"></div>
+      <div class="slide on" id="slideAyah">
+        <div class="card glass" id="ayahCard">
+          <div class="card-h"><div class="card-title">Ayah of the Hour</div><div class="langs"></div></div>
+          <div class="card-body"><div class="inner">
+            <div class="arabic" lang="ar"></div>
+            <div class="trans"></div>
+          </div></div>
+          <div class="ref"></div>
+        </div>
       </div>
-      <div class="card glass" id="hadithCard">
-        <div class="card-h"><div class="card-title">Hadith of the Hour</div><div class="langs"></div></div>
-        <div class="card-body"><div class="inner">
-          <div class="arabic" lang="ar"></div>
-          <div class="trans"></div>
-        </div></div>
-        <div class="ref"></div>
+      <div class="slide" id="slideHadith">
+        <div class="card glass" id="hadithCard">
+          <div class="card-h"><div class="card-title">Hadith of the Hour</div><div class="langs"></div></div>
+          <div class="card-body"><div class="inner">
+            <div class="arabic" lang="ar"></div>
+            <div class="trans"></div>
+          </div></div>
+          <div class="ref"></div>
+        </div>
       </div>
+      <div class="slide" id="slideForecast">
+        <div class="card glass">
+          <div class="card-h"><div class="card-title">14-Day Forecast</div><div class="fnote" id="fcUpd"></div></div>
+          <div class="fc" id="fc"></div>
+        </div>
       </div>
       <div class="slide" id="slideWeek">
-        <div class="card glass famcard">
+        <div class="card glass">
           <div class="card-h"><div class="card-title">This Week</div><div class="famupd" id="weekUpd"></div></div>
           <div class="week" id="week"></div>
         </div>
       </div>
       <div class="slide" id="slideLists">
-        <div class="card glass famcard">
+        <div class="card glass">
           <div class="card-h"><div class="card-title">Lists</div><div class="famupd" id="listsUpd"></div></div>
           <div class="lists" id="lists"></div>
         </div>
@@ -263,7 +288,8 @@ const DEFAULTS = {
   bgSeconds: 600,                 // switch background every 10 min
   kenBurns: true,                 // slow zoom on background
 
-  translationSeconds: 15,         // rotate translations every 15 s
+  translationSeconds: 12,         // each translation shows this long; the Ayah/Hadith slide stays
+                                  // up long enough to show every language once (3 x 12 s = 36 s)
   langs: ["en","ur","bn"],
   langLabels: { en: "English", ur: "اردو", bn: "বাংলা" },
 
@@ -271,7 +297,8 @@ const DEFAULTS = {
   usNews: true,                   // US local headline ticker (same news.json)
   usNewsLabel: "NYC LOCAL",
   family: true,                   // calendar + lists slides (reads family.json written by fetch-family.py)
-  slideSeconds: { quran: 45, week: 20, lists: 20 },
+  slideSeconds: { forecast: 20, week: 20, lists: 20 },   // ayah/hadith: auto, see translationSeconds
+  forecast: true,                 // 14-day forecast slide (needs weather.json from fetch-weather.py)
   weather: true,                  // weather + alerts (reads weather.json written by fetch-weather.py)
   alertSeconds: 12,               // rotate between multiple alerts
   newsSpeed: 0.055,               // scroll speed, in screen-widths per second
@@ -497,23 +524,36 @@ function renderCard(id, item){
   card.querySelector(".ref").innerHTML = item.ref + (item.refAr ? ` &nbsp;·&nbsp; <span class="ar" lang="ar">${item.refAr}</span>` : "");
   card.querySelector(".langs").innerHTML = card._langs.length > 1
     ? card._langs.map(l => `<span data-l="${l}">${CONFIG.langLabels[l]}</span>`).join("") : "";
-  // size text so the LONGEST translation fits, so Arabic doesn't jump size on rotation
+  fitCard(card);
+}
+// Size the text so the LONGEST translation fits, so the Arabic doesn't jump size on rotation.
+// Re-run whenever fonts finish loading or the slide comes on screen: a late-loading font
+// changes text height, and a stale measurement would clip the first or last line.
+function fitCard(card){
+  if (!card._item) return;
+  const keep = card._li || 0;
   let s = 1;
   if (!card._langs.length) { card.querySelector(".trans").textContent = ""; s = fitScale(card); }
   card._langs.forEach(l => { setTrans(card, l); s = Math.min(s, fitScale(card)); });
   card.style.setProperty("--fs", s);
-  if (card._langs.length) setTrans(card, card._langs[0]);
+  if (card._langs.length) setTrans(card, card._langs[keep % card._langs.length]);
+}
+function showLang(card, idx){
+  if (!card._langs || !card._langs.length) return;
+  card._li = idx % card._langs.length;
+  setTrans(card, card._langs[card._li]);
+  const body = card.querySelector(".card-body"), inner = card.querySelector(".inner");
+  if (inner.offsetHeight > body.clientHeight) fitCard(card);           // a font loaded late: shrink to fit
 }
 function rotateTranslations(){
   ["ayahCard","hadithCard"].forEach(id => {
     const card = $(id);
+    if (!card.closest(".slide").classList.contains("on")) return;     // only the card on screen
     if (!card._langs || card._langs.length < 2) return;
+    if (card._li >= card._langs.length - 1) return;                       // last language stays until the slide changes
     const el = card.querySelector(".trans");
     el.classList.add("fade");
-    setTimeout(() => {
-      card._li = (card._li + 1) % card._langs.length;
-      setTrans(card, card._langs[card._li]);
-    }, 800);
+    setTimeout(() => { showLang(card, card._li + 1); el.classList.remove("fade"); }, 800);
   });
 }
 
@@ -590,9 +630,35 @@ async function loadWeather(){
     } else {
       $("weather").classList.add("hidden");
     }
+    renderForecast(stale ? [] : (w.days || []), w.updated);
     alerts = stale ? [] : (w.alerts || []);
     alertIdx = 0; showAlert();
   } catch(e) { /* keep last shown */ }
+}
+let fcDays = [];
+function renderForecast(days, updated){
+  fcDays = days.filter(d => d && d.date).slice(0, 14);
+  if (!fcDays.length) { $("fc").innerHTML = ""; return; }
+  const highs = fcDays.map(d => d.high).filter(v => v !== null && v !== undefined);
+  const lows  = fcDays.map(d => d.low).filter(v => v !== null && v !== undefined);
+  const lo = Math.min(...lows), hi = Math.max(...highs), span = Math.max(1, hi - lo);
+  const dash = v => (v === null || v === undefined) ? "—" : `${v}°`;
+  $("fc").innerHTML = fcDays.map((d, i) => {
+    const hasT = d.high !== null && d.high !== undefined && d.low !== null && d.low !== undefined;
+    const bar = hasT ? `<i style="left:${(d.low - lo) / span * 100}%;right:${(hi - d.high) / span * 100}%"></i>` : "";
+    const wet = (d.rain || 0) >= 50;
+    const rainTxt = d.precip >= 0.01 ? `💧 ${d.rain}% · ${d.precip}"` : `💧 ${d.rain || 0}%`;
+    return `<div class="fday${i === 0 ? " today" : ""}${wet ? " wet" : ""}" title="${escHTML(d.text || "")}">
+              <div class="fdow">${escHTML(d.dow)}</div>
+              <div class="fmd">${escHTML(d.md)}</div>
+              <div class="ficon">${d.icon || ""}</div>
+              <div class="ftemp">${dash(d.high)}<small>${dash(d.low)}</small></div>
+              <div class="fbar">${bar}</div>
+              <div class="frain">${rainTxt}</div>
+            </div>`;
+  }).join("");
+  const u = new Date((updated || 0) * 1000);
+  $("fcUpd").textContent = `High / low °F · rain chance · Open-Meteo · ${u.getHours() % 12 || 12}:${pad(u.getMinutes())} ${u.getHours() >= 12 ? "PM" : "AM"}`;
 }
 function showAlert(){
   const bar = $("alertbar");
@@ -644,22 +710,41 @@ async function loadFamily(){
   } catch(e) { /* keep last shown */ }
 }
 
-let slideIdx = 0;
+const SLIDES = [
+  ["ayah", "slideAyah"], ["hadith", "slideHadith"], ["forecast", "slideForecast"],
+  ["week", "slideWeek"], ["lists", "slideLists"]
+];
+let slideIdx = 0, langTimer = null;
 function availableSlides(){
-  const s = ["quran"];
+  const s = ["ayah", "hadith"];
+  if (CONFIG.weather && CONFIG.forecast && fcDays.length) s.push("forecast");
   if (CONFIG.family && fam) {
     if ((fam.days || []).some(d => d.total > 0)) s.push("week");
     if ((fam.lists || []).length) s.push("lists");
   }
   return s;
 }
+function slideDuration(key){
+  if (key === "ayah" || key === "hadith") {
+    const card = $(key === "ayah" ? "ayahCard" : "hadithCard");
+    const n = (card._langs && card._langs.length) || 1;
+    return Math.max(15, n * CONFIG.translationSeconds);                // every language shown once
+  }
+  return CONFIG.slideSeconds[key] || 20;
+}
 function nextSlide(){
   const avail = availableSlides();
   slideIdx = (slideIdx + 1) % avail.length;
   const cur = avail[slideIdx];
-  [["quran","slideQuran"],["week","slideWeek"],["lists","slideLists"]].forEach(([k, id]) => $(id).classList.toggle("on", k === cur));
+  clearInterval(langTimer);
+  if (cur === "ayah" || cur === "hadith") {
+    const card = $(cur === "ayah" ? "ayahCard" : "hadithCard");
+    card._li = 0; fitCard(card);                                                    // re-measure, start at the first language
+    langTimer = setInterval(rotateTranslations, CONFIG.translationSeconds * 1000);  // then one step per language
+  }
+  SLIDES.forEach(([k, id]) => $(id).classList.toggle("on", k === cur));
   $("dots").innerHTML = avail.length > 1 ? avail.map((k, i) => `<i class="${i === slideIdx ? "on" : ""}"></i>`).join("") : "";
-  setTimeout(nextSlide, (CONFIG.slideSeconds[cur] || 20) * 1000);
+  setTimeout(nextSlide, slideDuration(cur) * 1000);
 }
 
 
@@ -668,7 +753,6 @@ function nextSlide(){
   initBackgrounds();
   if (CONFIG.news || CONFIG.usNews) { loadNews(); setInterval(loadNews, 5 * 60000); }
   if (CONFIG.family) { loadFamily(); setInterval(loadFamily, 2 * 60000); }
-  slideIdx = -1; setTimeout(nextSlide, 0);
   if (CONFIG.weather) { loadWeather(); setInterval(loadWeather, 5 * 60000); setInterval(rotateAlerts, CONFIG.alertSeconds * 1000); }
   document.querySelector("#tickerUS .tlabel").lastChild.textContent = CONFIG.usNewsLabel;
   loadTimings();
@@ -677,8 +761,9 @@ function nextSlide(){
   const fontLoads = ['1em "Amiri Quran"', '1em "Amiri"', '1em "Noto Nastaliq Urdu"', '1em "Noto Sans Bengali"', '1em "Inter"']
     .map(f => document.fonts.load(f, "ابجد اردو বাংলা Aa").catch(() => {}));
   await Promise.race([Promise.all(fontLoads), new Promise(r => setTimeout(r, 8000))]);
-  await refreshContent();
-  setInterval(rotateTranslations, CONFIG.translationSeconds * 1000);
+  await Promise.race([refreshContent(), new Promise(r => setTimeout(r, 20000))]);   // never hold the slideshow > 20 s
+  slideIdx = -1; nextSlide();
+  document.fonts.addEventListener("loadingdone", () => { fitCard($("ayahCard")); fitCard($("hadithCard")); });
 })();
 </script>
 </body>

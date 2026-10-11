@@ -2,7 +2,7 @@
 """Fetch weather + official alerts into /opt/athan/web/weather.json (root cron, every 10 min).
 
 Sources (free, no API key):
-  Open-Meteo   https://open-meteo.com       current conditions, hourly rain chance, daily high/low
+  Open-Meteo   https://open-meteo.com       current conditions, hourly rain chance, 14-day daily forecast
   NWS          https://api.weather.gov      official US watches/warnings/advisories for the point
 
 Also derives simple household heads-ups: rain expected in the next 12 hours, freezing
@@ -34,6 +34,7 @@ WMO = {
     95: ("Thunderstorm", "⛈️", "⛈️"), 96: ("Thunderstorm, hail", "⛈️", "⛈️"), 99: ("Thunderstorm, hail", "⛈️", "⛈️"),
 }
 WET = {51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99}
+FORECAST_DAYS = 14         # Open-Meteo allows up to 16; skill drops after ~7-10 days
 RAIN_THRESHOLD = 50          # % chance that counts as "rain expected"
 HOT_F, FREEZE_F = 90, 32
 
@@ -70,9 +71,10 @@ def weather(lat, lon):
            "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,"
            "wind_speed_10m,precipitation,is_day"
            "&hourly=precipitation_probability,weather_code"
-           "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max"
+           "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,"
+           "precipitation_sum,wind_speed_10m_max,uv_index_max"
            "&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
-           "&timezone=auto&forecast_days=2")
+           "&timezone=auto&forecast_days=" + str(FORECAST_DAYS))
     w = get_json(url)
     c, h, d = w["current"], w["hourly"], w["daily"]
     code = int(c["weather_code"])
@@ -86,6 +88,22 @@ def weather(lat, lon):
         "high": round(d["temperature_2m_max"][0]), "low": round(d["temperature_2m_min"][0]),
         "rain_chance": d["precipitation_probability_max"][0], "uv": d["uv_index_max"][0],
     }
+
+    days = []
+    for i, date in enumerate(d["time"]):
+        raw = d["weather_code"][i]
+        dtext, dicon, _ = WMO.get(int(raw), ("", "🌡️", "🌡️")) if raw is not None else ("", "", "")
+        tm = time.strptime(date, "%Y-%m-%d")
+        days.append({
+            "date": date,
+            "dow": "Today" if i == 0 else time.strftime("%a", tm),
+            "md": f"{tm.tm_mon}/{tm.tm_mday}",
+            "icon": dicon, "text": dtext,
+            "high": _r(d["temperature_2m_max"][i]), "low": _r(d["temperature_2m_min"][i]),
+            "rain": d["precipitation_probability_max"][i] or 0,
+            "precip": round(d["precipitation_sum"][i] or 0, 2),
+            "wind": _r(d["wind_speed_10m_max"][i]),
+        })
 
     notices = []
     now_hour = c["time"][:13]                                  # "YYYY-MM-DDTHH"
@@ -105,7 +123,11 @@ def weather(lat, lon):
         notices.append({"level": "moderate", "icon": "🥵", "text": f"Hot today — high of {today['high']}°F, stay hydrated"})
     if today["low"] <= FREEZE_F:
         notices.append({"level": "moderate", "icon": "🥶", "text": f"Freezing temperatures — low of {today['low']}°F"})
-    return cur, today, notices
+    return cur, today, notices, days
+
+
+def _r(v):
+    return None if v is None else round(v)
 
 
 def _plus_hours(hour_str, n):
@@ -136,7 +158,7 @@ def main():
     conf = read_conf(CONF)
     lat, lon = conf.get("LATITUDE", "40.7128"), conf.get("LONGITUDE", "-74.0060")
     try:
-        cur, today, notices = weather(lat, lon)
+        cur, today, notices, days = weather(lat, lon)
     except Exception as e:
         print(f"Open-Meteo FAILED ({e}); keeping previous weather.json", file=sys.stderr)
         return 1
@@ -145,13 +167,13 @@ def main():
     except Exception as e:                  # alerts are a bonus; never lose the forecast over them
         print(f"NWS alerts FAILED ({e})", file=sys.stderr)
         alerts = []
-    data = {"updated": int(time.time()), "current": cur, "today": today, "alerts": alerts + notices}
+    data = {"updated": int(time.time()), "current": cur, "today": today, "days": days, "alerts": alerts + notices}
     fd, tmp = tempfile.mkstemp(dir=os.path.dirname(OUT), prefix=".weather-", suffix=".json")
     with os.fdopen(fd, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
     os.chmod(tmp, 0o644)
     os.replace(tmp, OUT)
-    print(f"{cur['icon']} {cur['temp']}°F {cur['text']} · H {today['high']} L {today['low']} · {len(alerts)} NWS alert(s), {len(notices)} notice(s)")
+    print(f"{cur['icon']} {cur['temp']}°F {cur['text']} · H {today['high']} L {today['low']} · {len(days)}-day forecast · {len(alerts)} NWS alert(s), {len(notices)} notice(s)")
     return 0
 
 
