@@ -12,6 +12,9 @@ command -v unclutter >/dev/null && unclutter -idle 1 &
 PREFS="$HOME/.config/chromium/Default/Preferences"
 [ -f "$PREFS" ] && sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]*"/"exit_type":"Normal"/' "$PREFS"
 
+# Chromium's page cache lives in /tmp so every reboot starts clean (no stale page)
+rm -rf "$HOME/.cache/chromium"
+
 (
   # Wait (up to 2 min) for the nginx container before opening the page
   for _ in $(seq 1 60); do curl -fs -o /dev/null http://localhost:8080 && break; sleep 2; done
@@ -20,6 +23,7 @@ PREFS="$HOME/.config/chromium/Default/Preferences"
     chromium --kiosk --noerrdialogs --disable-infobars --disable-session-crashed-bubble \
       --disable-features=Translate --autoplay-policy=no-user-gesture-required \
       --check-for-update-interval=31536000 \
+      --disk-cache-dir=/tmp/athan-chromium-cache \
       http://localhost:8080
     sleep 5
   done

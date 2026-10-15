@@ -860,6 +860,23 @@ async function startNewsVideo(tries = 0){
   vWatchdog = setTimeout(next, 25000);                                  // not playing after 25 s: try the next channel
 }
 
+/* ---------- self-update ----------
+   Re-checks index.html and config.js every 3 minutes, bypassing every cache. When either
+   has changed on the server (a new install or apply-config.sh), the page reloads itself,
+   so a deploy reaches the TV without restarting the kiosk. */
+let pageSig = null;
+async function checkForUpdate(){
+  try {
+    const sig = (await Promise.all(["index.html", "config.js"].map(async f => {
+      const r = await fetch(f + "?v=" + Date.now(), { method: "HEAD", cache: "no-store" });
+      return r.ok ? (r.headers.get("etag") || r.headers.get("last-modified") || "") : "";
+    }))).join("|");
+    if (!sig.replace("|", "")) return;
+    if (pageSig === null) pageSig = sig;
+    else if (sig !== pageSig) location.reload();
+  } catch(e) { /* offline: try again later */ }
+}
+
 const SLIDES = [
   ["ayah", "slideAyah"], ["hadith", "slideHadith"], ["forecast", "slideForecast"],
   ["newsvideo", "slideNewsVideo"], ["markets", "slideMarkets"],
@@ -914,6 +931,7 @@ function nextSlide(){
   document.querySelector("#tickerUS .tlabel").lastChild.textContent = CONFIG.usNewsLabel;
   loadTimings();
   tick(); setInterval(tick, 1000);
+  checkForUpdate(); setInterval(checkForUpdate, 3 * 60000);
   // make sure all four scripts' fonts are loaded before measuring text size
   const fontLoads = ['1em "Amiri Quran"', '1em "Amiri"', '1em "Noto Nastaliq Urdu"', '1em "Noto Sans Bengali"', '1em "Inter"']
     .map(f => document.fonts.load(f, "ابجد اردو বাংলা Aa").catch(() => {}));
