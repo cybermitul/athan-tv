@@ -7,7 +7,7 @@
 set -u
 WEB=${WEB:-/opt/athan/web}
 URL=${URL:-http://127.0.0.1:8080}
-SECS=${SECS:-75}
+SECS=${SECS:-90}
 CHROME=$(command -v chromium || command -v chromium-browser || command -v google-chrome) || { echo "chromium not found"; exit 1; }
 
 echo "== config.js"; grep -E 'markets|newsVideo|forecast|family' "$WEB/config.js" | sed 's/^/   /'
@@ -34,10 +34,21 @@ f.onload = () => {
     " player=" + ev("ytPlayer && ytPlayer.getPlayerState ? ytPlayer.getPlayerState() : (ytPlayer ? 'creating' : 'none')") +
     " msg=" + String(ev('($("vmsg")||{}).textContent||"-"')).replace(/"/g, "")
   ), 5000);
-  setTimeout(() => {                                   // jump straight to the news video slide
-    log("forcing newsvideo slide");
-    ev('vSkip=false; (function(){ const a=availableSlides(); slideIdx=a.indexOf("newsvideo")-1; nextSlide(); })()');
-  }, 15000);
+  let started = 0, forced = "";                         // wait for the real slideshow to start first
+  setInterval(() => {
+    const on = ev('(SLIDES.find(([k,id]) => $(id).classList.contains("on"))||["none"])[0]');
+    if (!started && on !== "none") { started = Date.now(); log("slideshow started on " + on); }
+    if (started && !forced && Date.now() - started > 3000) {
+      forced = "newsvideo"; log("forcing newsvideo slide");
+      ev('vSkip=false; (function(){ const a=availableSlides(); slideIdx=a.indexOf("newsvideo")-1; nextSlide(); })()');
+    }
+    if (forced === "newsvideo" && Date.now() - started > 48000) {
+      forced = "markets"; log("forcing markets slide");
+      ev('(function(){ const a=availableSlides(); slideIdx=a.indexOf("markets")-1; nextSlide(); })()');
+      setTimeout(() => log("markets tiles=" + ev('$("mk").children.length') +
+        " visible=" + ev('getComputedStyle($("slideMarkets")).opacity')), 2500);
+    }
+  }, 1000);
 };
 </script>
 HTML
