@@ -102,3 +102,19 @@ The slide is skipped automatically when no stream plays within 25 seconds (chann
 ```
 
 Each symbol prints its price, or `FAILED` with the reason. The data source is Yahoo Finance's unofficial public endpoint; if it changes, failed symbols keep their last value (marked "not updated") and the slide hides itself once the data is two days old.
+
+## Markets slide missing / `HTTP Error 429: Too Many Requests`
+
+Yahoo refuses some browser user-agents with 429 even when you are nowhere near a rate
+limit. `fetch-markets.py` tries plain `Mozilla/5.0` and Windows Chrome/Edge on both
+`query1` and `query2`, remembers the combination that worked in
+`/var/lib/athan/markets-state.json`, and backs off for 30 minutes when every combination
+is refused. Cron runs it every 10 minutes.
+
+```bash
+sudo /opt/athan/fetch-markets.py --force      # ignore the back-off and try now
+curl -s -o /dev/null -w "%{http_code}\n" -A "Mozilla/5.0" \
+  "https://query2.finance.yahoo.com/v8/finance/chart/%5EGSPC?range=1d&interval=5m"
+```
+If that curl prints 429 too, the IP is temporarily throttled: wait an hour. The slide
+simply stays hidden until data arrives.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch market prices into /opt/athan/web/markets.json (root cron, every 5 minutes).
+"""Fetch market prices into /opt/athan/web/markets.json (root cron, every 10 minutes).
 
 Source: Yahoo Finance's public chart endpoint (no API key; delayed ~15 min for most
 exchanges). It is unofficial, so every failure is handled: a symbol that fails keeps its
@@ -13,12 +13,26 @@ import re
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
 CONF = os.environ.get("ATHAN_CONF", "/etc/default/athan")
 OUT = os.environ.get("MARKETS_OUT", "/opt/athan/web/markets.json")
-UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+STATE = os.environ.get("MARKETS_STATE", "/var/lib/athan/markets-state.json")
+# Yahoo answers 429 to some browser user-agents (reported for Linux/macOS Chrome, Safari,
+# Firefox) while plain "Mozilla/5.0" and Windows Chrome/Edge get 200. Since it is the UA
+# being refused, not a real rate limit, we try each UA on both API hosts, keep whichever
+# one works, and start with it next run.
+HOSTS = ("query1.finance.yahoo.com", "query2.finance.yahoo.com")
+UAS = (
+    "Mozilla/5.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/145.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
+)
+COOLDOWN = 30 * 60          # after a run where everything was refused, back off this long
 DEFAULT = ("S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;Russell 2000|^RUT;"
            "10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F;Bitcoin|BTC-USD")
 SPARK_POINTS = 60
@@ -39,10 +53,52 @@ def read_conf(path):
     return conf
 
 
-def get_json(url):
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=20) as r:
-        return json.load(r)
+def load_state():
+    try:
+        with open(STATE, encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, ValueError):
+        return {}
+
+
+def save_state(state):
+    try:
+        os.makedirs(os.path.dirname(STATE), exist_ok=True)
+        with open(STATE, "w", encoding="utf-8") as f:
+            json.dump(state, f)
+    except OSError:
+        pass
+
+
+class Blocked(Exception):
+    """Every UA/host combination was refused -- no point trying more symbols this run."""
+
+
+class Client:
+    """Plain anonymous requests (no cookie/crumb: the chart endpoint doesn't need them,
+    and authenticated chart calls are throttled harder). Rotates UA/host on 429/403."""
+
+    def __init__(self, start=0):
+        self.combos = [(h, u) for u in UAS for h in HOSTS]
+        self.i = start % len(self.combos)
+
+    def get_json(self, path):
+        last = None
+        for _ in range(len(self.combos)):
+            host, ua = self.combos[self.i]
+            req = urllib.request.Request("https://" + host + path, headers={
+                "User-Agent": ua, "Accept": "application/json,text/plain,*/*",
+                "Accept-Language": "en-US,en;q=0.9"})
+            try:
+                with urllib.request.urlopen(req, timeout=20) as r:
+                    return json.load(r)
+            except urllib.error.HTTPError as e:
+                last = e
+                if e.code not in (429, 403, 401):
+                    raise                    # 404 etc: a real per-symbol problem
+                self.i = (self.i + 1) % len(self.combos)
+                time.sleep(1)
+        raise Blocked(f"HTTP {last.code} on every user-agent/host")
 
 
 def downsample(vals, n):
@@ -52,10 +108,10 @@ def downsample(vals, n):
     return [vals[round(i * step)] for i in range(n)]
 
 
-def fetch(label, symbol):
-    url = ("https://query1.finance.yahoo.com/v8/finance/chart/" + urllib.parse.quote(symbol, safe="")
-           + "?range=1d&interval=5m&includePrePost=false")
-    res = get_json(url)["chart"]["result"][0]
+def fetch(client, label, symbol):
+    path = ("/v8/finance/chart/" + urllib.parse.quote(symbol, safe="")
+            + "?range=1d&interval=5m&includePrePost=false")
+    res = client.get_json(path)["chart"]["result"][0]
     meta = res["meta"]
     price = meta.get("regularMarketPrice")
     prev = meta.get("chartPreviousClose") or meta.get("previousClose")
@@ -83,6 +139,13 @@ def fetch(label, symbol):
 
 
 def main():
+    force = "--force" in sys.argv
+    state = load_state()
+    wait = state.get("blocked_until", 0) - time.time()
+    if wait > 0 and not force:
+        print(f"Backing off after HTTP 429; next try in {int(wait // 60) + 1} min (use --force to try now)")
+        return 0
+    client = Client(state.get("combo", 0))
     conf = read_conf(CONF)
     spec = conf.get("MARKETS") or DEFAULT
     pairs = [p.split("|", 1) for p in spec.split(";") if "|" in p]
@@ -92,25 +155,35 @@ def main():
     except (FileNotFoundError, ValueError, KeyError):
         previous = {}
 
-    quotes, ok = [], 0
+    quotes, ok, blocked = [], 0, False
     for label, symbol in pairs:
         label, symbol = label.strip(), symbol.strip()
-        try:
-            q = fetch(label, symbol)
-            ok += 1
-            print(f"{label:<16} {q['price']:>12,.2f}  {q['pct']:+6.2f}%  {'open' if q['open'] else 'closed'}")
-        except Exception as e:                       # one bad symbol must not stop the others
-            print(f"{label}: FAILED ({e})", file=sys.stderr)
-            q = previous.get(symbol)
-            if q is None:
+        q = None
+        if not blocked:
+            try:
+                q = fetch(client, label, symbol)
+                ok += 1
+                print(f"{label:<16} {q['price']:>12,.2f}  {q['pct']:+6.2f}%  {'open' if q['open'] else 'closed'}")
+            except Blocked as e:                     # Yahoo refuses us outright: stop asking
+                print(f"{label}: FAILED ({e}); skipping the rest this run", file=sys.stderr)
+                blocked = True
+            except Exception as e:                   # one bad symbol must not stop the others
+                print(f"{label}: FAILED ({e})", file=sys.stderr)
+            time.sleep(0.3)                          # be gentle with the endpoint
+        if q is None:                                # keep the last good value, marked stale
+            if symbol not in previous:
                 continue
-            q = dict(q, stale=True)
+            q = dict(previous[symbol], stale=True)
         quotes.append(q)
-        time.sleep(0.3)                              # be gentle with the endpoint
 
     if ok == 0:
-        print("All symbols failed; keeping previous markets.json", file=sys.stderr)
+        state["blocked_until"] = int(time.time()) + COOLDOWN
+        save_state(state)
+        print("All symbols failed; keeping previous markets.json and backing off 30 min", file=sys.stderr)
         return 1
+    host, ua = client.combos[client.i]
+    save_state({"combo": client.i})
+    print(f"(via {host}, UA \"{ua[:40]}\")")
     us = next((q for q in quotes if q["symbol"] in ("^GSPC", "^DJI", "^IXIC")), None)
     data = {"updated": int(time.time()), "us_open": bool(us and us["open"]), "quotes": quotes}
     fd, tmp = tempfile.mkstemp(dir=os.path.dirname(OUT), prefix=".markets-", suffix=".json")

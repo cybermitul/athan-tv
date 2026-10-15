@@ -80,13 +80,13 @@ systemctl enable --now atd cron >/dev/null
   echo "@reboot sleep 75 && $ATHAN/fetch-weather.py >/dev/null 2>&1"
   echo "*/5 * * * * $ATHAN/fetch-family.py >/dev/null 2>&1"
   echo "@reboot sleep 80 && $ATHAN/fetch-family.py >/dev/null 2>&1"
-  echo "*/5 * * * * $ATHAN/fetch-markets.py >/dev/null 2>&1"
+  echo "*/10 * * * * $ATHAN/fetch-markets.py >/dev/null 2>&1"
   echo "@reboot sleep 85 && $ATHAN/fetch-markets.py >/dev/null 2>&1"
 ) | crontab -
 "$ATHAN/fetch-news.py" || echo "  (news feeds unreachable right now -- cron retries every 15 min)"
 "$ATHAN/fetch-weather.py" || echo "  (weather unreachable right now -- cron retries every 10 min)"
 "$ATHAN/fetch-family.py" || echo "  (family calendar not reachable yet -- see docs/FAMILY.md)"
-"$ATHAN/fetch-markets.py" || echo "  (market data unreachable right now -- cron retries every 5 min)"
+"$ATHAN/fetch-markets.py" --force || echo "  (market data unreachable right now -- cron retries every 10 min)"
 "$ATHAN/schedule-athan.sh" || echo "  (could not fetch times now -- cron will retry)"
 atq || true
 
