@@ -40,7 +40,7 @@ install -d "$ATHAN/web/bg"
 install -m 644 "$REPO/web/index.html" "$ATHAN/web/index.html"
 install -m 644 "$REPO/docker-compose.yml" "$ATHAN/docker-compose.yml"
 install -m 644 "$REPO/config/nginx-default.conf" "$ATHAN/nginx.conf"
-for s in schedule-athan.sh play-adhan.sh apply-config.sh fetch-media.sh fetch-news.py fetch-weather.py fetch-family.py; do
+for s in schedule-athan.sh play-adhan.sh apply-config.sh fetch-media.sh fetch-news.py fetch-weather.py fetch-family.py fetch-markets.py; do
   install -m 755 "$REPO/scripts/$s" "$ATHAN/$s"
 done
 install -m 644 "$REPO/config/logrotate-athan" /etc/logrotate.d/athan
@@ -71,7 +71,7 @@ usermod -aG audio,video "$KIOSK_USER"
 
 step "7/8 Scheduling adhan, news, weather and family data (root crontab)"
 systemctl enable --now atd cron >/dev/null
-( crontab -l 2>/dev/null | grep -vE 'schedule-athan.sh|fetch-news.py|fetch-weather.py|fetch-family.py' || true
+( crontab -l 2>/dev/null | grep -vE 'schedule-athan.sh|fetch-news.py|fetch-weather.py|fetch-family.py|fetch-markets.py' || true
   echo "5 0 * * * $ATHAN/schedule-athan.sh"
   echo "@reboot sleep 60 && $ATHAN/schedule-athan.sh"
   echo "*/15 * * * * $ATHAN/fetch-news.py >/dev/null 2>&1"
@@ -80,10 +80,13 @@ systemctl enable --now atd cron >/dev/null
   echo "@reboot sleep 75 && $ATHAN/fetch-weather.py >/dev/null 2>&1"
   echo "*/5 * * * * $ATHAN/fetch-family.py >/dev/null 2>&1"
   echo "@reboot sleep 80 && $ATHAN/fetch-family.py >/dev/null 2>&1"
+  echo "*/5 * * * * $ATHAN/fetch-markets.py >/dev/null 2>&1"
+  echo "@reboot sleep 85 && $ATHAN/fetch-markets.py >/dev/null 2>&1"
 ) | crontab -
 "$ATHAN/fetch-news.py" || echo "  (news feeds unreachable right now -- cron retries every 15 min)"
 "$ATHAN/fetch-weather.py" || echo "  (weather unreachable right now -- cron retries every 10 min)"
 "$ATHAN/fetch-family.py" || echo "  (family calendar not reachable yet -- see docs/FAMILY.md)"
+"$ATHAN/fetch-markets.py" || echo "  (market data unreachable right now -- cron retries every 5 min)"
 "$ATHAN/schedule-athan.sh" || echo "  (could not fetch times now -- cron will retry)"
 atq || true
 

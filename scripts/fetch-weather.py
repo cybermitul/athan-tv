@@ -2,7 +2,7 @@
 """Fetch weather + official alerts into /opt/athan/web/weather.json (root cron, every 10 min).
 
 Sources (free, no API key):
-  Open-Meteo   https://open-meteo.com       current conditions, hourly rain chance, 14-day daily forecast
+  Open-Meteo   https://open-meteo.com       current conditions, hourly rain chance, 7-day daily forecast
   NWS          https://api.weather.gov      official US watches/warnings/advisories for the point
 
 Also derives simple household heads-ups: rain expected in the next 12 hours, freezing
@@ -34,7 +34,7 @@ WMO = {
     95: ("Thunderstorm", "⛈️", "⛈️"), 96: ("Thunderstorm, hail", "⛈️", "⛈️"), 99: ("Thunderstorm, hail", "⛈️", "⛈️"),
 }
 WET = {51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99}
-FORECAST_DAYS = 14         # Open-Meteo allows up to 16; skill drops after ~7-10 days
+FORECAST_DAYS = 7          # Open-Meteo allows up to 16; skill drops after ~7-10 days
 RAIN_THRESHOLD = 50          # % chance that counts as "rain expected"
 HOT_F, FREEZE_F = 90, 32
 

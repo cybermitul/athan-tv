@@ -22,7 +22,16 @@ FAMILY_LISTS="Groceries, To-Do"                 # reminder lists to show, in ord
 
 # ---- Weather & alerts (Open-Meteo + US National Weather Service, uses LATITUDE/LONGITUDE) ----
 WEATHER=true                   # true/false
-FORECAST=true                  # 14-day forecast slide (needs WEATHER=true)
+FORECAST=true                  # 7-day forecast slide (needs WEATHER=true)
+
+# ---- Live world-news video slide (YouTube live streams; channels are set in web/index.html) ----
+NEWS_VIDEO=true
+NEWS_VIDEO_MUTED=true          # silent with captions, so it never talks over the adhan
+
+# ---- Markets slide (Yahoo Finance public chart data, ~15 min delayed) ----
+MARKETS_SLIDE=true
+# "Label|SYMBOL;..." using Yahoo symbols, max 8 shown. Examples: AAPL, MSFT, ^FTSE, BDT=X (USD to taka)
+MARKETS="S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;Russell 2000|^RUT;10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F;Bitcoin|BTC-USD"
 
 # ---- US local news ticker ----
 US_NEWS_TICKER=true            # true/false

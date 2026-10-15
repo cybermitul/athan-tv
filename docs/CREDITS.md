@@ -15,4 +15,6 @@ News headlines are fetched at runtime from each publisher's public RSS feed and 
 
 Weather data by [Open-Meteo](https://open-meteo.com) (CC BY 4.0). Alerts from the US National Weather Service (public domain).
 
+Market data: Yahoo Finance public chart data (delayed; for information only). Live news video: the broadcasters' own YouTube live streams, embedded with YouTube's player.
+
 Text sources: Quran text and translations via [alquran.cloud](https://alquran.cloud/); hadith via [fawazahmed0/hadith-api](https://github.com/fawazahmed0/hadith-api); prayer times via [Aladhan](https://aladhan.com/).

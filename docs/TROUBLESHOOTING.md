@@ -90,3 +90,15 @@ Install the colour emoji font and restart the display: `apt install fonts-noto-c
 - `ConnectionError` or a timeout: the firewall rule is missing, or Radicale isn't running. Test with `curl -u tv -X PROPFIND -H "Depth: 1" http://192.168.1.3:5232/family/`.
 - `401`: wrong tv password. `403`: the rights file doesn't give `tv` read access; check the `[tv-family]` rule comes first.
 - It succeeds but reports 0 events and no lists: nothing has been created under the `family` account yet (docs/FAMILY.md step 3.5).
+
+## Live news slide never appears
+
+The slide is skipped automatically when no stream plays within 25 seconds (channel offline, YouTube unreachable, or the stream blocks embedding), and retried every 30 minutes. Check the box can reach YouTube: `curl -sI https://www.youtube.com/iframe_api | head -1`. To swap channels, edit `newsChannels` in `web/index.html` (a YouTube channel ID starts with `UC`).
+
+## Markets slide missing or "not updated"
+
+```bash
+/opt/athan/fetch-markets.py
+```
+
+Each symbol prints its price, or `FAILED` with the reason. The data source is Yahoo Finance's unofficial public endpoint; if it changes, failed symbols keep their last value (marked "not updated") and the slide hides itself once the data is two days old.

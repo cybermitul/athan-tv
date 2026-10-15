@@ -26,6 +26,9 @@ window.ATHAN_CONFIG = {
   usNewsLabel: "${US_NEWS_LABEL:-NYC LOCAL}",
   weather: ${WEATHER:-true},
   forecast: ${FORECAST:-true},
+  markets: ${MARKETS_SLIDE:-true},
+  newsVideo: ${NEWS_VIDEO:-true},
+  newsMuted: ${NEWS_VIDEO_MUTED:-true},
   family: ${FAMILY:-true}
 };
 JS

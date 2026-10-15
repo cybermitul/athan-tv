@@ -119,23 +119,50 @@
   .ref{text-align:center;font-size:1.35vw;color:var(--gold);margin-top:1vh;opacity:.9}
   .ref .ar{font-family:var(--ar);font-size:1.25em}
 
-  /* ---------- 14-day forecast slide ---------- */
-  .fc{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:1fr 1fr;gap:1vh .8vw;min-height:0}
-  .fday{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:1.2vh .4vw;border-radius:.8vw;background:rgba(255,255,255,.04);border:1px solid transparent;min-height:0}
+  /* ---------- 7-day forecast slide ---------- */
+  .fc{flex:1;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.8vw;min-height:0;padding-top:1vh}
+  .fday{display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:2vh .5vw;border-radius:1vw;background:rgba(255,255,255,.05);border:1px solid transparent;min-height:0;text-align:center}
   .fday.today{background:rgba(95,212,168,.14);border-color:var(--accent)}
-  .fday.wet{background:rgba(110,170,255,.12)}
+  .fday.wet{background:rgba(110,170,255,.13)}
   .fday.today.wet{background:rgba(95,212,168,.14)}
-  .fdow{font-size:1.4vw;font-weight:700;line-height:1.1}
+  .fdow{font-size:2vw;font-weight:700;line-height:1.1}
   .fday.today .fdow{color:var(--accent)}
-  .fmd{font-size:.95vw;color:var(--muted)}
-  .ficon{font-family:'Noto Color Emoji',sans-serif;font-size:3vw;line-height:1}
-  .ftemp{font-size:1.7vw;font-weight:700;font-variant-numeric:tabular-nums}
-  .ftemp small{font-size:.7em;color:var(--muted);font-weight:500;margin-left:.3vw}
-  .fbar{position:relative;width:80%;height:.45vh;border-radius:.3vh;background:rgba(255,255,255,.1)}
+  .fmd{font-size:1.15vw;color:var(--muted)}
+  .ficon{font-family:'Noto Color Emoji',sans-serif;font-size:5vw;line-height:1}
+  .ftext{font-size:1.1vw;color:var(--muted);line-height:1.25;min-height:2.6em;display:flex;align-items:center}
+  .ftemp{font-size:2.6vw;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+  .ftemp small{display:block;font-size:.62em;color:var(--muted);font-weight:500;margin-top:.6vh}
+  .fbar{position:relative;width:70%;height:.6vh;border-radius:.3vh;background:rgba(255,255,255,.1)}
   .fbar i{position:absolute;top:0;bottom:0;border-radius:.3vh;background:linear-gradient(90deg,#7cc4ff,#f4b942)}
-  .frain{font-size:1.05vw;color:var(--muted);white-space:nowrap}
+  .frain{font-size:1.15vw;color:var(--muted);line-height:1.3}
   .fday.wet .frain{color:#9fd0ff;font-weight:600}
+  .fwind{font-size:1.05vw;color:var(--muted)}
   .fnote{font-size:.85vw;color:var(--muted);text-align:right}
+
+  /* ---------- live news video slide ---------- */
+  .vcard{padding:1.6vh 1.4vw}
+  .vbox{position:relative;flex:1;min-height:0;border-radius:.8vw;overflow:hidden;background:#000}
+  .vbox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.4vw;color:var(--muted);text-align:center;padding:2vw}
+  .live{display:flex;align-items:center;gap:.6vw;font-size:1.05vw;font-weight:700;letter-spacing:.12em;color:#fff}
+  .live i{width:.7vw;height:.7vw;border-radius:50%;background:#e5484d;animation:pulse 1.4s ease-in-out infinite}
+  .live span{font-weight:500;letter-spacing:0;color:var(--muted)}
+
+  /* ---------- markets slide ---------- */
+  .mk{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;gap:1vw;min-height:0;padding-top:.6vh}
+  .mt{display:flex;flex-direction:column;justify-content:space-between;padding:1.6vh 1.1vw;border-radius:.9vw;background:rgba(255,255,255,.05);min-height:0;border-top:.35vh solid transparent}
+  .mt.up{border-top-color:#3ecf8e}
+  .mt.down{border-top-color:#f16a6a}
+  .mlabel{font-size:1.25vw;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mprice{font-size:2.4vw;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+  .mchg{font-size:1.3vw;font-weight:600;font-variant-numeric:tabular-nums}
+  .mt.up .mchg{color:#3ecf8e}
+  .mt.down .mchg{color:#f16a6a}
+  .mt svg{width:100%;height:6.5vh;display:block}
+  .mstale{font-size:.85vw;color:#f4b942}
+  .mstate{font-size:1vw;font-weight:700;letter-spacing:.1em;padding:.3vh .8vw;border-radius:1vw}
+  .mstate.open{background:rgba(62,207,142,.2);color:#3ecf8e}
+  .mstate.closed{background:rgba(255,255,255,.1);color:var(--muted)}
 
   /* ---------- weather (header, centre) ---------- */
   .weather{display:flex;align-items:center;gap:1vw;padding:1vh 1.4vw;text-shadow:0 .2vw 1vw rgba(0,0,0,.6)}
@@ -230,8 +257,20 @@
       </div>
       <div class="slide" id="slideForecast">
         <div class="card glass">
-          <div class="card-h"><div class="card-title">14-Day Forecast</div><div class="fnote" id="fcUpd"></div></div>
+          <div class="card-h"><div class="card-title">7-Day Forecast</div><div class="fnote" id="fcUpd"></div></div>
           <div class="fc" id="fc"></div>
+        </div>
+      </div>
+      <div class="slide" id="slideNewsVideo">
+        <div class="card glass vcard">
+          <div class="card-h"><div class="card-title">World News</div><div class="live"><i></i>LIVE <span id="vName"></span></div></div>
+          <div class="vbox" id="vbox"><div class="vmsg" id="vmsg">Connecting to live news…</div></div>
+        </div>
+      </div>
+      <div class="slide" id="slideMarkets">
+        <div class="card glass">
+          <div class="card-h"><div class="card-title">Markets</div><div style="display:flex;gap:1vw;align-items:center"><span class="fnote" id="mkUpd"></span><span class="mstate" id="mkState"></span></div></div>
+          <div class="mk" id="mk"></div>
         </div>
       </div>
       <div class="slide" id="slideWeek">
@@ -297,8 +336,16 @@ const DEFAULTS = {
   usNews: true,                   // US local headline ticker (same news.json)
   usNewsLabel: "NYC LOCAL",
   family: true,                   // calendar + lists slides (reads family.json written by fetch-family.py)
-  slideSeconds: { forecast: 20, week: 20, lists: 20 },   // ayah/hadith: auto, see translationSeconds
-  forecast: true,                 // 14-day forecast slide (needs weather.json from fetch-weather.py)
+  slideSeconds: { forecast: 20, newsvideo: 90, markets: 70, week: 20, lists: 20 },   // ayah/hadith: auto
+  forecast: true,                 // 7-day forecast slide (needs weather.json from fetch-weather.py)
+  markets: true,                  // markets slide (reads markets.json written by fetch-markets.py)
+  newsVideo: true,                // live world-news video slide (YouTube live streams)
+  newsMuted: true,                // keep the video silent (captions on) so it never talks over the adhan
+  newsChannels: [                 // tried in order; the next one is used if a stream is down
+    { name: "Al Jazeera English", id: "UCNye-wNBqNL5ZzHSJj3l8Bg" },
+    { name: "DW News",            id: "UCknLrEdhRCp1aegoMqRaCZg" },
+    { name: "France 24 English",  id: "UCQfwfsi5VrQ8yKZ-UWmAEFg" }
+  ],
   weather: true,                  // weather + alerts (reads weather.json written by fetch-weather.py)
   alertSeconds: 12,               // rotate between multiple alerts
   newsSpeed: 0.055,               // scroll speed, in screen-widths per second
@@ -637,7 +684,7 @@ async function loadWeather(){
 }
 let fcDays = [];
 function renderForecast(days, updated){
-  fcDays = days.filter(d => d && d.date).slice(0, 14);
+  fcDays = days.filter(d => d && d.date).slice(0, 7);
   if (!fcDays.length) { $("fc").innerHTML = ""; return; }
   const highs = fcDays.map(d => d.high).filter(v => v !== null && v !== undefined);
   const lows  = fcDays.map(d => d.low).filter(v => v !== null && v !== undefined);
@@ -647,14 +694,16 @@ function renderForecast(days, updated){
     const hasT = d.high !== null && d.high !== undefined && d.low !== null && d.low !== undefined;
     const bar = hasT ? `<i style="left:${(d.low - lo) / span * 100}%;right:${(hi - d.high) / span * 100}%"></i>` : "";
     const wet = (d.rain || 0) >= 50;
-    const rainTxt = d.precip >= 0.01 ? `💧 ${d.rain}% · ${d.precip}"` : `💧 ${d.rain || 0}%`;
+    const rainTxt = d.precip >= 0.01 ? `💧 ${d.rain}%<br>${d.precip}"` : `💧 ${d.rain || 0}%`;
     return `<div class="fday${i === 0 ? " today" : ""}${wet ? " wet" : ""}" title="${escHTML(d.text || "")}">
               <div class="fdow">${escHTML(d.dow)}</div>
               <div class="fmd">${escHTML(d.md)}</div>
               <div class="ficon">${d.icon || ""}</div>
+              <div class="ftext">${escHTML(d.text || "")}</div>
               <div class="ftemp">${dash(d.high)}<small>${dash(d.low)}</small></div>
               <div class="fbar">${bar}</div>
               <div class="frain">${rainTxt}</div>
+              <div class="fwind">💨 ${d.wind ?? "—"} mph</div>
             </div>`;
   }).join("");
   const u = new Date((updated || 0) * 1000);
@@ -710,14 +759,118 @@ async function loadFamily(){
   } catch(e) { /* keep last shown */ }
 }
 
+/* ---------- markets slide ---------- */
+let mkt = null;
+function fmtNum(v, sym){
+  const dec = Math.abs(v) >= 1000 ? 0 : (Math.abs(v) >= 10 ? 2 : 3);
+  const n = v.toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  return sym === "^TNX" ? n + "%" : n;
+}
+function spark(vals, prev, up){
+  if (!vals || vals.length < 2) return "";
+  const all = vals.concat([prev]);
+  const lo = Math.min(...all), hi = Math.max(...all), span = (hi - lo) || 1, W = 200, H = 50;
+  const x = i => (i / (vals.length - 1) * W).toFixed(1), y = v => (H - 3 - (v - lo) / span * (H - 6)).toFixed(1);
+  const pts = vals.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+  const col = up ? "#3ecf8e" : "#f16a6a";
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <line x1="0" x2="${W}" y1="${y(prev)}" y2="${y(prev)}" stroke="rgba(255,255,255,.25)" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>
+    <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+}
+async function loadMarkets(){
+  try {
+    const r = await fetch("markets.json?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    if (Date.now()/1000 - (j.updated || 0) > 2 * 24 * 3600) { mkt = null; return; }   // two days old: hide
+    mkt = j;
+    $("mk").innerHTML = (j.quotes || []).slice(0, 8).map(q => {
+      const up = q.change >= 0, arrow = up ? "▲" : "▼";
+      const chg = q.symbol === "^TNX" ? Math.abs(q.change).toFixed(3) : fmtNum(Math.abs(q.change), "");
+      return `<div class="mt ${up ? "up" : "down"}">
+                <div class="mlabel">${escHTML(q.label)}</div>
+                <div class="mprice">${fmtNum(q.price, q.symbol)}</div>
+                <div class="mchg">${arrow} ${chg} (${up ? "+" : "−"}${Math.abs(q.pct).toFixed(2)}%)</div>
+                ${spark(q.spark, q.prev, up)}
+                ${q.stale ? '<div class="mstale">not updated</div>' : ""}
+              </div>`;
+    }).join("");
+    const u = new Date(j.updated * 1000);
+    $("mkUpd").textContent = `Delayed quotes · ${u.getHours() % 12 || 12}:${pad(u.getMinutes())} ${u.getHours() >= 12 ? "PM" : "AM"}`;
+    const st = $("mkState");
+    st.textContent = j.us_open ? "US MARKET OPEN" : "US MARKET CLOSED";
+    st.className = "mstate " + (j.us_open ? "open" : "closed");
+  } catch(e) { /* keep last shown */ }
+}
+
+/* ---------- live news video slide ----------
+   The player is created when the slide comes on and destroyed when it leaves, so the
+   video only uses CPU and bandwidth while it is actually on screen. If a channel is not
+   live or refuses embedding, the next channel is tried; if none works, the slide is
+   skipped until the next 30-minute retry. */
+let ytReady = null, ytPlayer = null, vChan = 0, vWatchdog = null, vSkip = false;
+function loadYT(){
+  if (ytReady) return ytReady;
+  ytReady = new Promise(res => {
+    window.onYouTubeIframeAPIReady = () => res(true);
+    const sc = document.createElement("script");
+    sc.src = "https://www.youtube.com/iframe_api";
+    sc.onerror = () => { ytReady = null; res(false); };
+    document.head.appendChild(sc);
+  });
+  return ytReady;
+}
+function stopNewsVideo(){
+  clearTimeout(vWatchdog);
+  try { if (ytPlayer) ytPlayer.destroy(); } catch(e) {}
+  ytPlayer = null;
+  $("vbox").innerHTML = '<div class="vmsg" id="vmsg">Connecting to live news…</div>';
+}
+async function startNewsVideo(tries = 0){
+  stopNewsVideo();
+  const chans = CONFIG.newsChannels || [];
+  const fail = () => {                                                  // nothing plays: move on instead of showing a dead slide
+    vSkip = true;
+    if ($("slideNewsVideo").classList.contains("on")) { slideIdx--; nextSlide(); }
+  };
+  if (!chans.length || tries >= chans.length) return fail();
+  const ch = chans[vChan % chans.length];
+  $("vName").textContent = "· " + ch.name;
+  if (!(await loadYT()) || !window.YT || !YT.Player) return fail();
+  if (!$("slideNewsVideo").classList.contains("on")) return;          // slide already moved on
+  const host = document.createElement("div"); host.id = "ytHost";
+  $("vbox").appendChild(host);
+  const next = () => { vChan++; startNewsVideo(tries + 1); };
+  ytPlayer = new YT.Player("ytHost", {
+    width: "100%", height: "100%",
+    playerVars: {
+      autoplay: 1, mute: CONFIG.newsMuted ? 1 : 0, controls: 0, rel: 0, playsinline: 1,
+      cc_load_policy: 1, iv_load_policy: 3, disablekb: 1, origin: location.origin,
+      channel: ch.id
+    },
+    videoId: "live_stream",
+    events: {
+      onReady: e => { if (CONFIG.newsMuted) e.target.mute(); e.target.playVideo(); },
+      onStateChange: e => {
+        if (e.data === YT.PlayerState.PLAYING) { clearTimeout(vWatchdog); vSkip = false; const m = $("vmsg"); if (m) m.remove(); }
+      },
+      onError: next
+    }
+  });
+  vWatchdog = setTimeout(next, 25000);                                  // not playing after 25 s: try the next channel
+}
+
 const SLIDES = [
   ["ayah", "slideAyah"], ["hadith", "slideHadith"], ["forecast", "slideForecast"],
+  ["newsvideo", "slideNewsVideo"], ["markets", "slideMarkets"],
   ["week", "slideWeek"], ["lists", "slideLists"]
 ];
-let slideIdx = 0, langTimer = null;
+let slideIdx = 0, langTimer = null, slideTimer = null;
 function availableSlides(){
   const s = ["ayah", "hadith"];
   if (CONFIG.weather && CONFIG.forecast && fcDays.length) s.push("forecast");
+  if (CONFIG.newsVideo && navigator.onLine && !vSkip) s.push("newsvideo");
+  if (CONFIG.markets && mkt && (mkt.quotes || []).length) s.push("markets");
   if (CONFIG.family && fam) {
     if ((fam.days || []).some(d => d.total > 0)) s.push("week");
     if ((fam.lists || []).length) s.push("lists");
@@ -743,8 +896,10 @@ function nextSlide(){
     langTimer = setInterval(rotateTranslations, CONFIG.translationSeconds * 1000);  // then one step per language
   }
   SLIDES.forEach(([k, id]) => $(id).classList.toggle("on", k === cur));
+  if (cur === "newsvideo") startNewsVideo(); else if (ytPlayer || $("ytHost")) stopNewsVideo();
   $("dots").innerHTML = avail.length > 1 ? avail.map((k, i) => `<i class="${i === slideIdx ? "on" : ""}"></i>`).join("") : "";
-  setTimeout(nextSlide, slideDuration(cur) * 1000);
+  clearTimeout(slideTimer);
+  slideTimer = setTimeout(nextSlide, slideDuration(cur) * 1000);
 }
 
 
@@ -753,6 +908,8 @@ function nextSlide(){
   initBackgrounds();
   if (CONFIG.news || CONFIG.usNews) { loadNews(); setInterval(loadNews, 5 * 60000); }
   if (CONFIG.family) { loadFamily(); setInterval(loadFamily, 2 * 60000); }
+  if (CONFIG.markets) { loadMarkets(); setInterval(loadMarkets, 2 * 60000); }
+  if (CONFIG.newsVideo) { loadYT(); setInterval(() => { vSkip = false; }, 30 * 60000); }   // retry a failed video every 30 min
   if (CONFIG.weather) { loadWeather(); setInterval(loadWeather, 5 * 60000); setInterval(rotateAlerts, CONFIG.alertSeconds * 1000); }
   document.querySelector("#tickerUS .tlabel").lastChild.textContent = CONFIG.usNewsLabel;
   loadTimings();
