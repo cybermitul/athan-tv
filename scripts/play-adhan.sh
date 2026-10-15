@@ -4,6 +4,9 @@ CONF=/etc/default/athan
 # shellcheck source=/dev/null
 [ -f "$CONF" ] && . "$CONF"
 ALSA_DEVICE="${ALSA_DEVICE:-hdmi:CARD=HDMI,DEV=0}"
+# setup-audio.sh shares HDMI with the news video through the "athan" mixer; play through it
+# so the adhan never finds the device busy.
+grep -q "^pcm.athan " /etc/asound.conf 2>/dev/null && ALSA_DEVICE=athan
 AUDIO="${AUDIO:-/opt/athan/adhan.mp3}"
 SCALE="${SCALE:-}"
 PRAYER="${1:-test}"

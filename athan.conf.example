@@ -26,7 +26,8 @@ FORECAST=true                  # 7-day forecast slide (needs WEATHER=true)
 
 # ---- Live world-news video slide (YouTube live streams; channels are set in web/index.html) ----
 NEWS_VIDEO=true
-NEWS_VIDEO_MUTED=true          # silent with captions, so it never talks over the adhan
+NEWS_VIDEO_MUTED=true          # false = play the news with sound (skipped 1 min before to 6 min after each adhan)
+NEWS_VIDEO_VOLUME=60           # 0-100, news loudness when not muted
 
 # ---- Markets slide (Yahoo Finance public chart data, ~15 min delayed) ----
 MARKETS_SLIDE=true

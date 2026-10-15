@@ -40,7 +40,7 @@ install -d "$ATHAN/web/bg"
 install -m 644 "$REPO/web/index.html" "$ATHAN/web/index.html"
 install -m 644 "$REPO/docker-compose.yml" "$ATHAN/docker-compose.yml"
 install -m 644 "$REPO/config/nginx-default.conf" "$ATHAN/nginx.conf"
-for s in schedule-athan.sh play-adhan.sh apply-config.sh fetch-media.sh fetch-news.py fetch-weather.py fetch-family.py fetch-markets.py; do
+for s in schedule-athan.sh play-adhan.sh apply-config.sh fetch-media.sh fetch-news.py fetch-weather.py fetch-family.py fetch-markets.py setup-audio.sh; do
   install -m 755 "$REPO/scripts/$s" "$ATHAN/$s"
 done
 install -m 644 "$REPO/config/logrotate-athan" /etc/logrotate.d/athan
@@ -54,6 +54,7 @@ else
 fi
 chmod 600 /etc/default/athan    # may hold the CalDAV password
 "$ATHAN/apply-config.sh"
+"$ATHAN/setup-audio.sh"
 
 step "4/8 Downloading backgrounds and adhan"
 "$ATHAN/fetch-media.sh"

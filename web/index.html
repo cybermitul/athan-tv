@@ -340,7 +340,8 @@ const DEFAULTS = {
   forecast: true,                 // 7-day forecast slide (needs weather.json from fetch-weather.py)
   markets: true,                  // markets slide (reads markets.json written by fetch-markets.py)
   newsVideo: true,                // live world-news video slide (YouTube live streams)
-  newsMuted: true,                // keep the video silent (captions on) so it never talks over the adhan
+  newsMuted: true,                // silent with captions; false = sound (the video is skipped around adhan times)
+  newsVolume: 60,                 // 0-100, used when newsMuted is false
   newsChannels: [                 // tried in order; the next one is used if a stream is down
     { name: "Al Jazeera English", id: "UCNye-wNBqNL5ZzHSJj3l8Bg" },
     { name: "DW News",            id: "UCknLrEdhRCp1aegoMqRaCZg" },
@@ -458,6 +459,7 @@ function tick(){
   if (now.getHours() !== lastHour)    { lastHour = now.getHours(); refreshContent(); }
   if (now.getHours() === 3 && now.getMinutes() === 0 && performance.now() > 120000) location.reload(); // daily fresh start
 
+  if ($("slideNewsVideo").classList.contains("on") && inAdhanWindow()) { slideIdx--; nextSlide(); }  // adhan time: leave the video
   if (!T) return;
   const nowMin = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
   const real = PRAYERS.filter(p => !p.info);
@@ -850,7 +852,10 @@ async function startNewsVideo(tries = 0){
     },
     videoId: "live_stream",
     events: {
-      onReady: e => { if (CONFIG.newsMuted) e.target.mute(); e.target.playVideo(); },
+      onReady: e => {
+        if (CONFIG.newsMuted) e.target.mute(); else { e.target.unMute(); e.target.setVolume(CONFIG.newsVolume); }
+        e.target.playVideo();
+      },
       onStateChange: e => {
         if (e.data === YT.PlayerState.PLAYING) { clearTimeout(vWatchdog); vSkip = false; const m = $("vmsg"); if (m) m.remove(); }
       },
@@ -877,6 +882,15 @@ async function checkForUpdate(){
   } catch(e) { /* offline: try again later */ }
 }
 
+/* The adhan (played by the box, not the page) must never compete with the news audio:
+   the video slide is left out from 1 minute before each prayer to 6 minutes after. */
+function inAdhanWindow(){
+  if (!T) return false;
+  const n = new Date(), m = n.getHours() * 60 + n.getMinutes() + n.getSeconds() / 60;
+  return PRAYERS.some(p => !p.info && T.timings[p.key] &&
+    m >= toMin(T.timings[p.key]) - 1 && m < toMin(T.timings[p.key]) + 6);
+}
+
 const SLIDES = [
   ["ayah", "slideAyah"], ["hadith", "slideHadith"], ["forecast", "slideForecast"],
   ["newsvideo", "slideNewsVideo"], ["markets", "slideMarkets"],
@@ -886,7 +900,7 @@ let slideIdx = 0, langTimer = null, slideTimer = null;
 function availableSlides(){
   const s = ["ayah", "hadith"];
   if (CONFIG.weather && CONFIG.forecast && fcDays.length) s.push("forecast");
-  if (CONFIG.newsVideo && navigator.onLine && !vSkip) s.push("newsvideo");
+  if (CONFIG.newsVideo && navigator.onLine && !vSkip && !inAdhanWindow()) s.push("newsvideo");
   if (CONFIG.markets && mkt && (mkt.quotes || []).length) s.push("markets");
   if (CONFIG.family && fam) {
     if ((fam.days || []).some(d => d.total > 0)) s.push("week");

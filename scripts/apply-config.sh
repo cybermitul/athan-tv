@@ -29,6 +29,7 @@ window.ATHAN_CONFIG = {
   markets: ${MARKETS_SLIDE:-true},
   newsVideo: ${NEWS_VIDEO:-true},
   newsMuted: ${NEWS_VIDEO_MUTED:-true},
+  newsVolume: ${NEWS_VIDEO_VOLUME:-60},
   family: ${FAMILY:-true}
 };
 JS
