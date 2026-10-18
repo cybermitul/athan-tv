@@ -360,6 +360,8 @@ const DEFAULTS = {
   weather: true,                  // weather + alerts (reads weather.json written by fetch-weather.py)
   alertSeconds: 12,               // rotate between multiple alerts
   newsSpeed: 0.055,               // scroll speed, in screen-widths per second
+  newsLoopSeconds: null,          // if set, each ticker's full loop takes this long (speed kept between
+                                  // 0.025 and 0.08 screen-widths/s so it stays readable); null = use newsSpeed
 
   quranEditions: { ar: "quran-uthmani", en: "en.sahih", ur: "ur.jalandhry", bn: "bn.bengali" },
   hadithBooks: [
@@ -670,9 +672,17 @@ function renderTicker(tickerId, trackId, items){
   ticker.classList.remove("hidden");
   requestAnimationFrame(() => {
     const half = track.scrollWidth / 2;
-    const pxPerSec = window.innerWidth * CONFIG.newsSpeed;
+    const loop = Number(CONFIG.newsLoopSeconds);
+    let secs;
+    if (CONFIG.newsLoopSeconds != null && loop > 0) {
+      // speed that makes one loop take `loop` seconds, clamped to a readable range
+      const speed = Math.min(0.08, Math.max(0.025, half / window.innerWidth / loop));
+      secs = half / (window.innerWidth * speed);
+    } else {
+      secs = Math.max(20, half / (window.innerWidth * CONFIG.newsSpeed));
+    }
     track.style.animation = "none"; void track.offsetWidth;            // restart animation
-    track.style.animation = `tscroll ${Math.max(20, half / pxPerSec)}s linear infinite`;
+    track.style.animation = `tscroll ${secs}s linear infinite`;
   });
 }
 async function loadNews(){

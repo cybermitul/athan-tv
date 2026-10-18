@@ -58,6 +58,8 @@ window.ATHAN_CONFIG = {
   newsMuted: ${NEWS_VIDEO_MUTED:-true},
   newsVolume: ${NEWS_VIDEO_VOLUME:-60},
 ${CHANS_LINE}
+  newsSpeed: ${NEWS_SPEED:-0.055},
+  newsLoopSeconds: ${NEWS_LOOP_SECONDS:-null},
   family: ${FAMILY:-true}
 };
 JS

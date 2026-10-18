@@ -47,6 +47,12 @@ MARKETS_SLIDE=true
 MARKETS="S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F"
 # Verify any symbol before adding it:  /opt/athan/test-symbols.py "Label|SYMBOL;..."
 
+# ---- News ticker speed (applies to both tickers) ----
+NEWS_SPEED=0.055               # scroll speed in screen-widths per second
+#NEWS_LOOP_SECONDS=180         # instead: each ticker's full loop takes this many seconds; speed is
+                               # kept between 0.025 and 0.08 screen-widths/s, so very long or short
+                               # headline lists may take longer or shorter than this
+
 # ---- US financial news ticker ----
 US_NEWS_TICKER=true            # true/false
 US_NEWS_LABEL="US MARKETS"
