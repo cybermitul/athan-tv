@@ -41,12 +41,16 @@ fi
 
 # Share the response with the page, tagged with the date and settings it was fetched for so
 # the page can tell a stale or mismatched file from today's. Written atomically.
-TMP=$(mktemp "${TIMINGS_OUT}.XXXXXX") &&
-  echo "$JSON" | jq --arg date "$DATE" --arg lat "$LATITUDE" --arg lon "$LONGITUDE" \
-      --arg method "$METHOD" --arg school "$SCHOOL" --arg tune "$TUNE" \
-      '{date: $date, latitude: $lat, longitude: $lon, method: $method, school: $school, tune: $tune, data: .data}' > "$TMP" &&
-  chmod 644 "$TMP" && mv -f "$TMP" "$TIMINGS_OUT" ||
-  { log "WARNING: could not write $TIMINGS_OUT -- the page will fetch times itself"; rm -f "${TMP:-}"; }
+if TMP=$(mktemp "${TIMINGS_OUT}.XXXXXX") &&
+   echo "$JSON" | jq --arg date "$DATE" --arg lat "$LATITUDE" --arg lon "$LONGITUDE" \
+       --arg method "$METHOD" --arg school "$SCHOOL" --arg tune "$TUNE" \
+       '{date: $date, latitude: $lat, longitude: $lon, method: $method, school: $school, tune: $tune, data: .data}' > "$TMP" &&
+   chmod 644 "$TMP" && mv -f "$TMP" "$TIMINGS_OUT"; then
+  :
+else
+  log "WARNING: could not write $TIMINGS_OUT -- the page will fetch times itself"
+  rm -f "${TMP:-}"
+fi
 
 # Remove adhan jobs from an earlier run (this version's player, or older versions that
 # called mpg123 on adhan.mp3 directly) so re-runs never double up
