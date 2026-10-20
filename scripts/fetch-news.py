@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch news headlines (Bengali + US local) from RSS/RDF/Atom feeds into /opt/athan/web/news.json.
+"""Fetch news headlines (Bengali + US financial) from RSS/RDF/Atom feeds into /opt/athan/web/news.json.
 
 Runs from root's crontab every 15 minutes. The web page reads news.json from the
 same origin, which avoids the browser's cross-origin (CORS) block on news sites.
@@ -7,7 +7,7 @@ Only headlines and source names are stored -- no article text.
 
 Feeds come from /etc/default/athan, each formatted "Name|URL;Name|URL":
   NEWS_FEEDS     Bengali ticker
-  US_NEWS_FEEDS  US local ticker
+  US_NEWS_FEEDS  US financial ticker
 If every feed in a group fails, that group's previous headlines are kept.
 """
 import html
@@ -26,7 +26,9 @@ CONF = "/etc/default/athan"
 OUT = os.environ.get("NEWS_OUT", "/opt/athan/web/news.json")
 DEFAULT_FEEDS = {
     "bn": "BBC বাংলা|https://feeds.bbci.co.uk/bengali/rss.xml;DW বাংলা|https://rss.dw.com/rdf/rss-ben-all",
-    "us": "NYT New York|https://rss.nytimes.com/services/xml/rss/nyt/NYRegion.xml;Gothamist|https://gothamist.com/feed",
+    "us": "MarketWatch|https://feeds.content.dowjones.io/public/rss/mw_topstories"
+          ";Yahoo Finance|https://finance.yahoo.com/news/rssindex"
+          ";CNBC|https://www.cnbc.com/id/10000664/device/rss/rss.html",
 }
 CONF_KEYS = {"bn": "NEWS_FEEDS", "us": "US_NEWS_FEEDS"}
 UA = "athan-tv/1.0 (home prayer-times display)"

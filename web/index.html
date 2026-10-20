@@ -103,20 +103,20 @@
   .li .due{margin-left:auto;padding-left:1vw;font-size:.72em;color:var(--muted);white-space:nowrap}
   .li .due.over{color:#f08080}
   .alldone{font-size:1.3vw;color:var(--accent)}
-  .card{display:flex;flex-direction:column;padding:2.2vh 2vw;min-height:0;--fs:1}
+  .card{display:flex;flex-direction:column;padding:2.2vh 2vw;min-height:0;--fs:1;--afs:1}
   .card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:1vh}
   .card-title{font-size:1.1vw;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:600}
   .langs{display:flex;gap:.45vw}
   .langs span{font-size:1vw;padding:.25vh .7vw;border-radius:1vw;border:1px solid rgba(255,255,255,.22);color:var(--muted);transition:all .6s}
   .langs span.on{background:var(--gold);color:#1b1b1b;border-color:var(--gold);font-weight:600}
   .card-body{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
-  .inner{width:100%;display:flex;flex-direction:column;gap:3vh}
-  .arabic{font-family:var(--ar);direction:rtl;text-align:center;font-size:calc(4.2vw * var(--fs));line-height:1.9;color:#fff;text-shadow:0 .15vw .8vw rgba(0,0,0,.5)}
-  .trans{text-align:center;font-size:calc(2.4vw * var(--fs));line-height:1.45;transition:opacity .8s ease}
+  .inner{width:100%;display:flex;flex-direction:column;gap:1.8vh}
+  .arabic{font-family:var(--ar);direction:rtl;text-align:center;font-size:calc(4.2vw * var(--fs) * var(--afs,1));line-height:1.6;color:#fff;text-shadow:0 .15vw .8vw rgba(0,0,0,.5)}
+  .trans{text-align:center;font-size:calc(3.2vw * var(--fs));line-height:1.4;transition:opacity .8s ease}
   .trans.fade{opacity:0}
   .trans.ur{font-family:var(--ur);direction:rtl;font-size:calc(2.2vw * var(--fs));line-height:2.3}
   .trans.bn{font-family:var(--bn);font-size:calc(2.3vw * var(--fs));line-height:1.6}
-  .ref{text-align:center;font-size:1.35vw;color:var(--gold);margin-top:1vh;opacity:.9}
+  .ref{text-align:center;font-size:1.5vw;color:var(--gold);margin-top:.8vh;opacity:.9}
   .ref .ar{font-family:var(--ar);font-size:1.25em}
 
   /* ---------- 7-day forecast slide ---------- */
@@ -188,8 +188,9 @@
   /* ---------- news tickers ---------- */
   .ticker{display:flex;align-items:stretch;height:5.4vh;background:rgba(8,15,24,.74);border:1px solid var(--glass-border);border-radius:.9vw;overflow:hidden}
   .ticker.hidden{display:none}
-  .tlabel{flex:none;width:11vw;display:flex;align-items:center;gap:.6vw;padding:0 1.1vw;background:#b3261e;color:#fff;font-family:var(--bn);font-weight:500;font-size:1.3vw}
-  .ticker.us .tlabel{background:#1f4e9c;font-family:var(--ui);font-weight:700;letter-spacing:.08em;font-size:1.1vw}
+  .tlabel{flex:none;width:11vw;display:flex;align-items:center;gap:.6vw;padding:0 1.1vw;background:#b3261e;color:#fff;font-family:var(--bn);font-weight:500;font-size:1.3vw;white-space:nowrap}
+  /* wide enough for a two-word label like US MARKETS on one line */
+  .ticker.us .tlabel{width:12.6vw;background:#1f4e9c;font-family:var(--ui);font-weight:700;letter-spacing:.06em;font-size:1.05vw}
   .ticker.us .nitem{font-family:var(--ui);font-size:1.45vw}
   .tlabel .dot{width:.55vw;height:.55vw;border-radius:50%;background:#fff;animation:pulse 1.6s ease-in-out infinite}
   .tview{flex:1;position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 2.5%,#000 97.5%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 2.5%,#000 97.5%,transparent 100%)}
@@ -263,7 +264,7 @@
       </div>
       <div class="slide" id="slideNewsVideo">
         <div class="card glass vcard">
-          <div class="card-h"><div class="card-title">World News</div><div class="live"><i></i>LIVE <span id="vName"></span></div></div>
+          <div class="card-h"><div class="card-title" id="vTitle">US News Live</div><div class="live"><i></i>LIVE <span id="vName"></span></div></div>
           <div class="vbox" id="vbox"><div class="vmsg" id="vmsg">Connecting to live news…</div></div>
         </div>
       </div>
@@ -294,7 +295,7 @@
       <span class="aicon" id="aIcon"></span><span class="atext" id="aText"></span><span class="acount" id="aCount"></span>
     </div>
     <div class="ticker us hidden" id="tickerUS">
-      <div class="tlabel"><span class="dot"></span>NYC LOCAL</div>
+      <div class="tlabel"><span class="dot"></span>US MARKETS</div>
       <div class="tview"><div class="ttrack" id="ttrackUS"></div></div>
     </div>
     <div class="ticker hidden" id="tickerBN">
@@ -329,23 +330,30 @@ const DEFAULTS = {
 
   translationSeconds: 12,         // each translation shows this long; the Ayah/Hadith slide stays
                                   // up long enough to show every language once (3 x 12 s = 36 s)
-  langs: ["en","ur","bn"],
+  langs: ["en"],                  // set TRANSLATION_LANGS in /etc/default/athan; fewer languages = bigger text
+  textScaleMax: 1.6,              // Ayah/Hadith text grows up to this multiple of the base size when it fits
   langLabels: { en: "English", ur: "اردو", bn: "বাংলা" },
 
   news: true,                     // Bengali headline ticker (reads news.json written by fetch-news.py)
   usNews: true,                   // US local headline ticker (same news.json)
-  usNewsLabel: "NYC LOCAL",
+  usNewsLabel: "US MARKETS",
   family: true,                   // calendar + lists slides (reads family.json written by fetch-family.py)
-  slideSeconds: { forecast: 20, newsvideo: 90, markets: 70, week: 20, lists: 20 },   // ayah/hadith: auto
+  // ayah/hadith are a FLOOR: the slide stays up for at least this long, longer if more
+  // than one translation language has to be shown (languages x translationSeconds).
+  slideSeconds: { ayah: 24, hadith: 24, forecast: 20, newsvideo: 600, markets: 70, week: 20, lists: 20 },
   forecast: true,                 // 7-day forecast slide (needs weather.json from fetch-weather.py)
   markets: true,                  // markets slide (reads markets.json written by fetch-markets.py)
   newsVideo: true,                // live world-news video slide (YouTube live streams)
   newsMuted: true,                // silent with captions; false = sound (the video is skipped around adhan times)
   newsVolume: 60,                 // 0-100, used when newsMuted is false
-  newsChannels: [                 // tried in order; the next one is used if a stream is down
-    { name: "Al Jazeera English", id: "UCNye-wNBqNL5ZzHSJj3l8Bg" },
-    { name: "DW News",            id: "UCknLrEdhRCp1aegoMqRaCZg" },
-    { name: "France 24 English",  id: "UCQfwfsi5VrQ8yKZ-UWmAEFg" }
+  newsVideoTitle: "US News Live", // heading on the video slide
+  // Tried in order; the next one is used if a stream is down or refuses embedding.
+  // Set NEWS_VIDEO_CHANNELS in /etc/default/athan to override. Confirm the IDs on the
+  // box with: scripts/yt-channel-id.sh @ABCNews @NBCNews @LiveNOWFOX
+  newsChannels: [
+    { name: "ABC News Live",     id: "UCBi2mrWuNuyYy4gbM6fU18Q" },
+    { name: "NBC News NOW",      id: "UCeY0bbntWzzVIaj2z3QigXg" },
+    { name: "LiveNOW from FOX",  id: "UCJg9wBPyKMNA5sRDnvzmkdg" }
   ],
   weather: true,                  // weather + alerts (reads weather.json written by fetch-weather.py)
   alertSeconds: 12,               // rotate between multiple alerts
@@ -551,11 +559,25 @@ async function fetchHadith(){
 }
 
 /* ---------- rendering + auto-fit ---------- */
+// Start at textScaleMax and step DOWN until the text fits. Starting above 1 is what lets a
+// short ayah fill the card instead of being pinned at the base size; a long hadith still
+// shrinks past 1 exactly as before, so nothing can overflow.
+function maxScale(){ return Math.max(1, Number(CONFIG.textScaleMax) || 1); }
+const ARABIC_MIN = 0.80;            // the Arabic never shrinks below this share: keeps it at or above the translation
+// Two knobs: --fs scales the whole card, --afs scales the Arabic only. A long passage spends
+// --afs first, so the Arabic gives up room before the translation does; only once the Arabic
+// has hit ARABIC_MIN does the whole card step down. Short passages grow to textScaleMax.
 function fitScale(card){
   const body = card.querySelector(".card-body"), inner = card.querySelector(".inner");
-  let s = 1; card.style.setProperty("--fs", s);
-  while (inner.offsetHeight > body.clientHeight && s > 0.4){ s -= 0.04; card.style.setProperty("--fs", s); }
-  return s;
+  let s = maxScale(), a = 1;
+  const set = () => { card.style.setProperty("--fs", s); card.style.setProperty("--afs", a); };
+  set();
+  while (inner.offsetHeight > body.clientHeight && s > 0.4){
+    if (a > ARABIC_MIN) a = Math.round((a - 0.04) * 100) / 100;
+    else s -= 0.04;
+    set();
+  }
+  return { s, a };
 }
 function setTrans(card, lang){
   const el = card.querySelector(".trans");
@@ -581,10 +603,12 @@ function renderCard(id, item){
 function fitCard(card){
   if (!card._item) return;
   const keep = card._li || 0;
-  let s = 1;
-  if (!card._langs.length) { card.querySelector(".trans").textContent = ""; s = fitScale(card); }
-  card._langs.forEach(l => { setTrans(card, l); s = Math.min(s, fitScale(card)); });
+  let s = maxScale(), a = 1;
+  const take = r => { s = Math.min(s, r.s); a = Math.min(a, r.a); };
+  if (!card._langs.length) { card.querySelector(".trans").textContent = ""; take(fitScale(card)); }
+  card._langs.forEach(l => { setTrans(card, l); take(fitScale(card)); });
   card.style.setProperty("--fs", s);
+  card.style.setProperty("--afs", a);
   if (card._langs.length) setTrans(card, card._langs[keep % card._langs.length]);
 }
 function showLang(card, idx){
@@ -830,6 +854,7 @@ function stopNewsVideo(){
 }
 async function startNewsVideo(tries = 0){
   stopNewsVideo();
+  let played = false;                                                   // did THIS attempt ever actually play?
   const chans = CONFIG.newsChannels || [];
   const fail = () => {                                                  // nothing plays: move on instead of showing a dead slide
     vSkip = true;
@@ -842,7 +867,13 @@ async function startNewsVideo(tries = 0){
   if (!$("slideNewsVideo").classList.contains("on")) return;          // slide already moved on
   const host = document.createElement("div"); host.id = "ytHost";
   $("vbox").appendChild(host);
-  const next = () => { vChan++; startNewsVideo(tries + 1); };
+  // A segment now runs for many minutes, so a stream that drops halfway through must be
+  // replaced rather than leaving a dead slide up. If this attempt had been playing, the
+  // channel list is healthy and the retry count starts over instead of giving up.
+  const next = () => {
+    if (!$("slideNewsVideo").classList.contains("on")) return;          // slide already moved on
+    vChan++; startNewsVideo(played ? 0 : tries + 1);
+  };
   ytPlayer = new YT.Player("ytHost", {
     width: "100%", height: "100%",
     playerVars: {
@@ -857,7 +888,14 @@ async function startNewsVideo(tries = 0){
         e.target.playVideo();
       },
       onStateChange: e => {
-        if (e.data === YT.PlayerState.PLAYING) { clearTimeout(vWatchdog); vSkip = false; const m = $("vmsg"); if (m) m.remove(); }
+        if (e.data === YT.PlayerState.PLAYING) {
+          clearTimeout(vWatchdog); vSkip = false; played = true;
+          const m = $("vmsg"); if (m) m.remove();
+        } else if (e.data === YT.PlayerState.ENDED) {
+          clearTimeout(vWatchdog); next();                              // live stream ended mid-segment
+        } else if (e.data === YT.PlayerState.BUFFERING) {
+          clearTimeout(vWatchdog); vWatchdog = setTimeout(next, 25000); // stuck buffering: move on
+        }
       },
       onError: next
     }
@@ -912,7 +950,7 @@ function slideDuration(key){
   if (key === "ayah" || key === "hadith") {
     const card = $(key === "ayah" ? "ayahCard" : "hadithCard");
     const n = (card._langs && card._langs.length) || 1;
-    return Math.max(15, n * CONFIG.translationSeconds);                // every language shown once
+    return Math.max(CONFIG.slideSeconds[key] || 15, n * CONFIG.translationSeconds);  // every language shown once
   }
   return CONFIG.slideSeconds[key] || 20;
 }
@@ -943,6 +981,7 @@ function nextSlide(){
   if (CONFIG.newsVideo) { loadYT(); setInterval(() => { vSkip = false; }, 30 * 60000); }   // retry a failed video every 30 min
   if (CONFIG.weather) { loadWeather(); setInterval(loadWeather, 5 * 60000); setInterval(rotateAlerts, CONFIG.alertSeconds * 1000); }
   document.querySelector("#tickerUS .tlabel").lastChild.textContent = CONFIG.usNewsLabel;
+  if (CONFIG.newsVideoTitle) $("vTitle").textContent = CONFIG.newsVideoTitle;
   loadTimings();
   tick(); setInterval(tick, 1000);
   checkForUpdate(); setInterval(checkForUpdate, 3 * 60000);

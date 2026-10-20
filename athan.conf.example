@@ -9,7 +9,12 @@ SCHOOL=0            # 0 = standard Asr, 1 = Hanafi Asr
 TUNE=""             # optional per-prayer minute offsets, e.g. "0,2,0,0,0,0,0,0,0"
 
 # ---- Display ----
-TRANSLATION_LANGS="en ur bn"   # any of: en ur bn  (Arabic is always shown)
+TRANSLATION_LANGS="en"         # any of: en ur bn  (Arabic is always shown).
+                               # Fewer languages = bigger text and no rotation.
+TEXT_SCALE_MAX=1.6             # Ayah/Hadith text may grow to this multiple of the base size
+                               # when it fits. 1.0 = old behaviour (shrink only). Try 1.7 for
+                               # a bigger look; long passages still shrink so nothing clips.
+AYAH_SECONDS=24                # minimum seconds the Ayah and Hadith slides stay up
 
 # ---- Family calendar + lists (CalDAV / Radicale on Unraid) -- see docs/FAMILY.md ----
 # This file holds a password: install.sh sets it to mode 600 (root only).
@@ -24,20 +29,28 @@ FAMILY_LISTS="Groceries, To-Do"                 # reminder lists to show, in ord
 WEATHER=true                   # true/false
 FORECAST=true                  # 7-day forecast slide (needs WEATHER=true)
 
-# ---- Live world-news video slide (YouTube live streams; channels are set in web/index.html) ----
+# ---- Live news video slide (YouTube live streams) ----
 NEWS_VIDEO=true
+NEWS_VIDEO_TITLE="US News Live"
 NEWS_VIDEO_MUTED=true          # false = play the news with sound (skipped 1 min before to 6 min after each adhan)
 NEWS_VIDEO_VOLUME=60           # 0-100, news loudness when not muted
+NEWS_VIDEO_SECONDS=600         # how long the video stays on screen. 600 = a full 10-minute
+                               # segment instead of a 90-second clip. See the note below on
+                               # how this changes the share of screen time.
+# Channels tried in order; the next is used if a stream is down or blocks embedding.
+# Verify the IDs on this box first:  /opt/athan/yt-channel-id.sh @ABCNews @NBCNews @LiveNOWFOX
+NEWS_VIDEO_CHANNELS="ABC News Live|UCBi2mrWuNuyYy4gbM6fU18Q;NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;LiveNOW from FOX|UCJg9wBPyKMNA5sRDnvzmkdg"
 
 # ---- Markets slide (Yahoo Finance public chart data, ~15 min delayed) ----
 MARKETS_SLIDE=true
 # "Label|SYMBOL;..." using Yahoo symbols, max 8 shown. Examples: AAPL, MSFT, ^FTSE, BDT=X (USD to taka)
 MARKETS="S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;Russell 2000|^RUT;10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F;Bitcoin|BTC-USD"
 
-# ---- US local news ticker ----
+# ---- US financial news ticker ----
 US_NEWS_TICKER=true            # true/false
-US_NEWS_LABEL="NYC LOCAL"
-US_NEWS_FEEDS="NYT New York|https://rss.nytimes.com/services/xml/rss/nyt/NYRegion.xml;Gothamist|https://gothamist.com/feed"
+US_NEWS_LABEL="US MARKETS"
+# Verify any feed you add with:  /opt/athan/test-feeds.py "$US_NEWS_FEEDS"
+US_NEWS_FEEDS="MarketWatch|https://feeds.content.dowjones.io/public/rss/mw_topstories;Yahoo Finance|https://finance.yahoo.com/news/rssindex;CNBC|https://www.cnbc.com/id/10000664/device/rss/rss.html"
 
 # ---- Bengali news ticker ----
 NEWS_TICKER=true               # true/false
