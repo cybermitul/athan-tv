@@ -6,7 +6,7 @@
 # Handles change and IDs are easy to mistype, and a wrong ID fails silently (the slide
 # just skips). Run this on a machine with internet access and paste the output.
 #
-#   bash yt-channel-id.sh @ABCNews @NBCNews @LiveNOWFOX
+#   bash yt-channel-id.sh @ABCNews @NBCNews @CBSNews
 #
 set -uo pipefail
 [ $# -gt 0 ] || { echo "usage: $0 @handle [@handle ...]"; exit 1; }
