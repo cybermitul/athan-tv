@@ -40,6 +40,12 @@ set_key NEWS_VIDEO_TITLE      '"US News Live"'
 set_key NEWS_VIDEO_SECONDS    '600'
 set_key NEWS_VIDEO_CHANNELS   '"ABC News Live|UCBi2mrWuNuyYy4gbM6fU18Q;NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;CBS News|UC8p1vwvWtl6T73JiExfWs1g"'
 
+# ---- Market tiles: no crypto, no Russell 2000 -------------------------------
+# Six tiles lay out as 3x2 with no empty cells. Check any symbol you add first with
+# test-symbols.py -- a bad symbol is simply dropped from the slide without an error.
+set_key MARKETS_SLIDE 'true'
+set_key MARKETS       '"S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F"'
+
 # ---- Ticker: US financial instead of NYC local ------------------------------
 set_key US_NEWS_TICKER 'true'
 set_key US_NEWS_LABEL  '"US MARKETS"'
@@ -50,4 +56,5 @@ echo
 echo "Done. Now:"
 echo "  /opt/athan/apply-config.sh        # render config.js"
 echo "  /opt/athan/fetch-news.py          # pull the new feeds now instead of waiting 15 min"
+echo "  /opt/athan/fetch-markets.py --force   # redraw the market tiles now"
 echo "  grep -n 'US_NEWS_FEEDS\|TRANSLATION_LANGS\|NEWS_VIDEO_SECONDS' $CONF"

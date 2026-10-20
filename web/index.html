@@ -149,7 +149,7 @@
   .live span{font-weight:500;letter-spacing:0;color:var(--muted)}
 
   /* ---------- markets slide ---------- */
-  .mk{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;gap:1vw;min-height:0;padding-top:.6vh}
+  .mk{flex:1;display:grid;grid-template-columns:repeat(var(--mkcols,4),minmax(0,1fr));grid-auto-rows:1fr;gap:1vw;min-height:0;padding-top:.6vh}
   .mt{display:flex;flex-direction:column;justify-content:space-between;padding:1.6vh 1.1vw;border-radius:.9vw;background:rgba(255,255,255,.05);min-height:0;border-top:.35vh solid transparent}
   .mt.up{border-top-color:#3ecf8e}
   .mt.down{border-top-color:#f16a6a}
@@ -821,6 +821,10 @@ async function loadMarkets(){
                 ${q.stale ? '<div class="mstale">not updated</div>' : ""}
               </div>`;
     }).join("");
+    // Lay the tiles out in a full rectangle instead of leaving holes in a fixed 4-wide
+    // grid: 8 -> 4x2, 6 -> 3x2, 4 -> 2x2. Fewer, larger tiles read better on the TV.
+    const n = Math.min((j.quotes || []).length, 8);
+    $("mk").style.setProperty("--mkcols", n <= 4 ? Math.max(1, n) : Math.ceil(n / 2));
     const u = new Date(j.updated * 1000);
     $("mkUpd").textContent = `Delayed quotes · ${u.getHours() % 12 || 12}:${pad(u.getMinutes())} ${u.getHours() >= 12 ? "PM" : "AM"}`;
     const st = $("mkState");

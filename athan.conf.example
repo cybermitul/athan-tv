@@ -44,7 +44,8 @@ NEWS_VIDEO_CHANNELS="ABC News Live|UCBi2mrWuNuyYy4gbM6fU18Q;NBC News NOW|UCeY0bb
 # ---- Markets slide (Yahoo Finance public chart data, ~15 min delayed) ----
 MARKETS_SLIDE=true
 # "Label|SYMBOL;..." using Yahoo symbols, max 8 shown. Examples: AAPL, MSFT, ^FTSE, BDT=X (USD to taka)
-MARKETS="S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;Russell 2000|^RUT;10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F;Bitcoin|BTC-USD"
+MARKETS="S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F"
+# Verify any symbol before adding it:  /opt/athan/test-symbols.py "Label|SYMBOL;..."
 
 # ---- US financial news ticker ----
 US_NEWS_TICKER=true            # true/false
