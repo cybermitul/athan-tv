@@ -38,7 +38,7 @@ set_key AYAH_SECONDS      '24'
 set_key NEWS_VIDEO            'true'
 set_key NEWS_VIDEO_TITLE      '"US News Live"'
 set_key NEWS_VIDEO_SECONDS    '600'
-set_key NEWS_VIDEO_CHANNELS   '"ABC News Live|UCBi2mrWuNuyYy4gbM6fU18Q;NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;CBS News|UC8p1vwvWtl6T73JiExfWs1g"'
+set_key NEWS_VIDEO_CHANNELS   '"NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;NBC News|UChDKyKQ59fYz3JO2fl0Z6sg;ABC News|UCBi2mrWuNuyYy4gbM6fU18Q;CBS News|UC-SJ6nODDmufqBzPBwCvYvQ"'
 
 # ---- Market tiles: no crypto, no Russell 2000 -------------------------------
 # Six tiles lay out as 3x2 with no empty cells. Check any symbol you add first with

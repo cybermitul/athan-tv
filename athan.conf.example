@@ -39,7 +39,7 @@ NEWS_VIDEO_SECONDS=600         # how long the video stays on screen. 600 = a ful
                                # how this changes the share of screen time.
 # Channels tried in order; the next is used if a stream is down or blocks embedding.
 # Verify the IDs on this box first:  /opt/athan/yt-channel-id.sh @ABCNews @NBCNews @CBSNews
-NEWS_VIDEO_CHANNELS="ABC News Live|UCBi2mrWuNuyYy4gbM6fU18Q;NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;CBS News|UC8p1vwvWtl6T73JiExfWs1g"
+NEWS_VIDEO_CHANNELS="NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;NBC News|UChDKyKQ59fYz3JO2fl0Z6sg;ABC News|UCBi2mrWuNuyYy4gbM6fU18Q;CBS News|UC-SJ6nODDmufqBzPBwCvYvQ"
 
 # ---- Markets slide (Yahoo Finance public chart data, ~15 min delayed) ----
 MARKETS_SLIDE=true

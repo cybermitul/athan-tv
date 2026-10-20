@@ -31,7 +31,16 @@ DEFAULT_FEEDS = {
           ";CNBC|https://www.cnbc.com/id/10000664/device/rss/rss.html",
 }
 CONF_KEYS = {"bn": "NEWS_FEEDS", "us": "US_NEWS_FEEDS"}
-UA = "athan-tv/1.0 (home prayer-times display)"
+# Yahoo Finance (and some others) answer 404/403 to a non-browser User-Agent, exactly as
+# Yahoo's quote API does in fetch-markets.py. Be honest first, then fall back to browser
+# agents rather than losing the feed. The first agent that works for a feed is used.
+UAS = (
+    "athan-tv/1.0 (home prayer-times display)",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/145.0.0.0 Safari/537.36",
+    "Mozilla/5.0",
+)
+ACCEPT = "application/rss+xml,application/atom+xml,application/xml;q=0.9,*/*;q=0.8"
 MAX_PER_FEED = 10
 MAX_TOTAL = 20
 MAX_AGE_HOURS = 48
@@ -80,9 +89,23 @@ def parse_date(s):
 
 
 def fetch_feed(name, url):
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=20) as r:
-        root = ET.fromstring(r.read())
+    last = None
+    for ua in UAS:
+        req = urllib.request.Request(url, headers={"User-Agent": ua, "Accept": ACCEPT})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                raw = r.read()
+            break
+        except urllib.error.HTTPError as e:
+            last = e
+            if e.code in (401, 403, 404, 406, 429):     # looks like agent filtering: try the next
+                continue
+            raise
+        except Exception as e:                          # network-level failure: no point retrying agents
+            raise
+    else:
+        raise last
+    root = ET.fromstring(raw)
     items = []
     for it in root.iter("item"):                       # RSS 2.0
         items.append((it.findtext("title"), it.findtext("pubDate") or it.findtext(DC + "date")))

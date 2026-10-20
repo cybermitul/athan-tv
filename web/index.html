@@ -348,12 +348,14 @@ const DEFAULTS = {
   newsVolume: 60,                 // 0-100, used when newsMuted is false
   newsVideoTitle: "US News Live", // heading on the video slide
   // Tried in order; the next one is used if a stream is down or refuses embedding.
-  // Set NEWS_VIDEO_CHANNELS in /etc/default/athan to override. Confirm the IDs on the
-  // box with: scripts/yt-channel-id.sh @ABCNews @NBCNews @CBSNews
+  // Set NEWS_VIDEO_CHANNELS in /etc/default/athan to override. IDs below were confirmed
+  // with scripts/yt-channel-id.sh on the box -- never type one from memory, a wrong ID
+  // fails silently. NBC first by preference; two NBC channels, then ABC, then CBS.
   newsChannels: [
-    { name: "ABC News Live",     id: "UCBi2mrWuNuyYy4gbM6fU18Q" },
-    { name: "NBC News NOW",      id: "UCeY0bbntWzzVIaj2z3QigXg" },
-    { name: "CBS News",          id: "UC8p1vwvWtl6T73JiExfWs1g" }
+    { name: "NBC News NOW",  id: "UCeY0bbntWzzVIaj2z3QigXg" },
+    { name: "NBC News",      id: "UChDKyKQ59fYz3JO2fl0Z6sg" },
+    { name: "ABC News",      id: "UCBi2mrWuNuyYy4gbM6fU18Q" },
+    { name: "CBS News",      id: "UC-SJ6nODDmufqBzPBwCvYvQ" }
   ],
   weather: true,                  // weather + alerts (reads weather.json written by fetch-weather.py)
   alertSeconds: 12,               // rotate between multiple alerts
