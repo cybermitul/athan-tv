@@ -26,8 +26,9 @@ CONF = "/etc/default/athan"
 OUT = os.environ.get("NEWS_OUT", "/opt/athan/web/news.json")
 DEFAULT_FEEDS = {
     "bn": "BBC বাংলা|https://feeds.bbci.co.uk/bengali/rss.xml;DW বাংলা|https://rss.dw.com/rdf/rss-ben-all",
+    # Two feeds already reach MAX_TOTAL. Yahoo Finance is deliberately absent: its RSS
+    # endpoint 404s for some hosts regardless of User-Agent.
     "us": "MarketWatch|https://feeds.content.dowjones.io/public/rss/mw_topstories"
-          ";Yahoo Finance|https://finance.yahoo.com/news/rssindex"
           ";CNBC|https://www.cnbc.com/id/10000664/device/rss/rss.html",
 }
 CONF_KEYS = {"bn": "NEWS_FEEDS", "us": "US_NEWS_FEEDS"}

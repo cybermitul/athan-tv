@@ -51,7 +51,10 @@ MARKETS="S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;10-Yr Treasury|^TNX;Crude Oil
 US_NEWS_TICKER=true            # true/false
 US_NEWS_LABEL="US MARKETS"
 # Verify any feed you add with:  /opt/athan/test-feeds.py "$US_NEWS_FEEDS"
-US_NEWS_FEEDS="MarketWatch|https://feeds.content.dowjones.io/public/rss/mw_topstories;Yahoo Finance|https://finance.yahoo.com/news/rssindex;CNBC|https://www.cnbc.com/id/10000664/device/rss/rss.html"
+# MAX_PER_FEED=10 and MAX_TOTAL=20 in fetch-news.py, so two feeds already fill the ticker;
+# a third contributes nothing unless one of the others fails. Yahoo Finance was dropped:
+# finance.yahoo.com/news/rssindex returns 404 to this host whatever User-Agent is sent.
+US_NEWS_FEEDS="MarketWatch|https://feeds.content.dowjones.io/public/rss/mw_topstories;CNBC|https://www.cnbc.com/id/10000664/device/rss/rss.html"
 
 # ---- Bengali news ticker ----
 NEWS_TICKER=true               # true/false
