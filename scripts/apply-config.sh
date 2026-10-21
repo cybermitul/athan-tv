@@ -44,7 +44,7 @@ window.ATHAN_CONFIG = {
   translationSeconds: ${TRANSLATION_SECONDS:-12},
   slideSeconds: {
     ayah: ${AYAH_SECONDS:-24}, hadith: ${AYAH_SECONDS:-24},
-    forecast: ${FORECAST_SECONDS:-20}, newsvideo: ${NEWS_VIDEO_SECONDS:-600},
+    forecast: ${FORECAST_SECONDS:-20}, newsvideo: ${NEWS_VIDEO_SECONDS:-120},
     markets: ${MARKETS_SECONDS:-70}, week: ${WEEK_SECONDS:-20}, lists: ${LISTS_SECONDS:-20}
   },
   news: ${NEWS_TICKER:-true},

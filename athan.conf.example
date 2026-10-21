@@ -34,9 +34,10 @@ NEWS_VIDEO=true
 NEWS_VIDEO_TITLE="US News Live"
 NEWS_VIDEO_MUTED=true          # false = play the news with sound (skipped 1 min before to 6 min after each adhan)
 NEWS_VIDEO_VOLUME=60           # 0-100, news loudness when not muted
-NEWS_VIDEO_SECONDS=600         # how long the video stays on screen. 600 = a full 10-minute
-                               # segment instead of a 90-second clip. See the note below on
-                               # how this changes the share of screen time.
+NEWS_VIDEO_SECONDS=120         # how long the video stays on screen. With the other slides at
+                               # their defaults a full rotation is about 5 minutes, so 120 gives
+                               # the video ~40% of the screen; 600 would give it ~77% and leave
+                               # the Ayah and Hadith up only ~3% of the time each.
 # Channels tried in order; the next is used if a stream is down or blocks embedding.
 # Verify the IDs on this box first:  /opt/athan/yt-channel-id.sh @ABCNews @NBCNews @CBSNews
 NEWS_VIDEO_CHANNELS="NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;NBC News|UChDKyKQ59fYz3JO2fl0Z6sg;ABC News|UCBi2mrWuNuyYy4gbM6fU18Q;CBS News|UC-SJ6nODDmufqBzPBwCvYvQ"
