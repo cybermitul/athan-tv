@@ -95,6 +95,8 @@ Edit `/etc/default/athan`, then apply:
 | `US_NEWS_TICKER`, `US_NEWS_LABEL`, `US_NEWS_FEEDS` | English local-news ticker: on/off, label, feeds |
 | `NEWS_TICKER` | `true`/`false` to show the Bengali headline ticker |
 | `NEWS_FEEDS` | `Name\|URL;Name\|URL` list of RSS/Atom feeds |
+| `NEWS_SPEED` | Ticker scroll speed in screen-widths per second (default `0.055`) |
+| `NEWS_LOOP_SECONDS` | If set, each ticker scrolls through all its headlines in this many seconds, overriding `NEWS_SPEED`. Speed stays between 0.025 and 0.08 screen-widths/s for readability, so the actual loop can be longer or shorter. Unset = use `NEWS_SPEED` |
 | `ALSA_DEVICE` | Audio output (see below) |
 | `SCALE`, `FAJR_SCALE` | mpg123 volume scale, where 32768 = 100%. For example, `FAJR_SCALE=13000` makes Fajr about 40% volume |
 | `FAJR_AUDIO` | Separate Fajr recording, used if the file exists |

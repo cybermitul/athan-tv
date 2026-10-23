@@ -44,7 +44,7 @@ window.ATHAN_CONFIG = {
   translationSeconds: ${TRANSLATION_SECONDS:-12},
   slideSeconds: {
     ayah: ${AYAH_SECONDS:-24}, hadith: ${AYAH_SECONDS:-24},
-    forecast: ${FORECAST_SECONDS:-20}, newsvideo: ${NEWS_VIDEO_SECONDS:-600},
+    forecast: ${FORECAST_SECONDS:-20}, newsvideo: ${NEWS_VIDEO_SECONDS:-120},
     markets: ${MARKETS_SECONDS:-70}, week: ${WEEK_SECONDS:-20}, lists: ${LISTS_SECONDS:-20}
   },
   news: ${NEWS_TICKER:-true},
@@ -58,6 +58,8 @@ window.ATHAN_CONFIG = {
   newsMuted: ${NEWS_VIDEO_MUTED:-true},
   newsVolume: ${NEWS_VIDEO_VOLUME:-60},
 ${CHANS_LINE}
+  newsSpeed: ${NEWS_SPEED:-0.055},
+  newsLoopSeconds: ${NEWS_LOOP_SECONDS:-null},
   family: ${FAMILY:-true}
 };
 JS

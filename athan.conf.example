@@ -34,9 +34,10 @@ NEWS_VIDEO=true
 NEWS_VIDEO_TITLE="US News Live"
 NEWS_VIDEO_MUTED=true          # false = play the news with sound (skipped 1 min before to 6 min after each adhan)
 NEWS_VIDEO_VOLUME=60           # 0-100, news loudness when not muted
-NEWS_VIDEO_SECONDS=600         # how long the video stays on screen. 600 = a full 10-minute
-                               # segment instead of a 90-second clip. See the note below on
-                               # how this changes the share of screen time.
+NEWS_VIDEO_SECONDS=120         # how long the video stays on screen. With the other slides at
+                               # their defaults a full rotation is about 5 minutes, so 120 gives
+                               # the video ~40% of the screen; 600 would give it ~77% and leave
+                               # the Ayah and Hadith up only ~3% of the time each.
 # Channels tried in order; the next is used if a stream is down or blocks embedding.
 # Verify the IDs on this box first:  /opt/athan/yt-channel-id.sh @ABCNews @NBCNews @CBSNews
 NEWS_VIDEO_CHANNELS="NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;NBC News|UChDKyKQ59fYz3JO2fl0Z6sg;ABC News|UCBi2mrWuNuyYy4gbM6fU18Q;CBS News|UC-SJ6nODDmufqBzPBwCvYvQ"
@@ -46,6 +47,12 @@ MARKETS_SLIDE=true
 # "Label|SYMBOL;..." using Yahoo symbols, max 8 shown. Examples: AAPL, MSFT, ^FTSE, BDT=X (USD to taka)
 MARKETS="S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F"
 # Verify any symbol before adding it:  /opt/athan/test-symbols.py "Label|SYMBOL;..."
+
+# ---- News ticker speed (applies to both tickers) ----
+NEWS_SPEED=0.055               # scroll speed in screen-widths per second
+#NEWS_LOOP_SECONDS=180         # instead: each ticker's full loop takes this many seconds; speed is
+                               # kept between 0.025 and 0.08 screen-widths/s, so very long or short
+                               # headline lists may take longer or shorter than this
 
 # ---- US financial news ticker ----
 US_NEWS_TICKER=true            # true/false

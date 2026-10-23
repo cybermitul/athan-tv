@@ -33,11 +33,11 @@ set_key TRANSLATION_LANGS '"en"'
 set_key TEXT_SCALE_MAX    '1.6'
 set_key AYAH_SECONDS      '24'
 
-# ---- News video: US channels, full-length segments --------------------------
+# ---- News video: US channels, two minutes per pass ---------------------------
 # Replace the IDs below with the output of yt-channel-id.sh before relying on them.
 set_key NEWS_VIDEO            'true'
 set_key NEWS_VIDEO_TITLE      '"US News Live"'
-set_key NEWS_VIDEO_SECONDS    '600'
+set_key NEWS_VIDEO_SECONDS    '120'
 set_key NEWS_VIDEO_CHANNELS   '"NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;NBC News|UChDKyKQ59fYz3JO2fl0Z6sg;ABC News|UCBi2mrWuNuyYy4gbM6fU18Q;CBS News|UC-SJ6nODDmufqBzPBwCvYvQ"'
 
 # ---- Market tiles: no crypto, no Russell 2000 -------------------------------
