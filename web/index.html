@@ -57,8 +57,10 @@
   .plist{flex:1;display:flex;flex-direction:column;padding:.8vh .5vw;min-height:0}
   .prow{flex:1;display:grid;grid-template-columns:1fr auto;align-items:center;padding:0 1.2vw;border-radius:.8vw;border:2px solid transparent;transition:background .6s,border-color .6s}
   .prow + .prow{border-top-color:transparent;box-shadow:0 -1px 0 rgba(255,255,255,.07)}
-  .pname{font-size:1.75vw;font-weight:600;line-height:1.15}
-  .pname .ar{display:block;font-family:var(--ar);font-weight:400;font-size:1.3vw;color:var(--muted);line-height:1.3}
+  .pname{font-size:1.75vw;font-weight:600;line-height:1.15;display:flex;align-items:baseline;gap:.8vw;white-space:nowrap}
+  /* Arabic beside the English name, as in the Next Prayer box: stacked, six rows overflowed
+     the list at 1080p, clipping Isha and pushing each Arabic name into the row below. */
+  .pname .ar{font-family:var(--ar);font-weight:400;font-size:1.4vw;color:var(--muted);line-height:1}
   .ptime{font-size:2.4vw;font-weight:700;font-variant-numeric:tabular-nums}
   .ptime small{font-size:.48em;color:var(--muted);margin-left:.3vw;font-weight:600}
   .prow.sunrise{opacity:.62}
