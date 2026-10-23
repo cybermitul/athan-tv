@@ -409,28 +409,70 @@ function setStatus(msg){ $("status").textContent = msg || ""; }
 /* ---------- prayer times ---------- */
 let T = null;              // { key, timings, hijri, hijriAr }
 let timingsRetry = null;
+let sharedRetry = null;
+
+const todayKey = (d = new Date()) => `${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()}`;
+
+function timingsRecord(key, data, source){
+  const t = data.timings, h = data.date.hijri, meta = data.meta;
+  const timings = {};
+  PRAYERS.forEach(p => timings[p.key] = String(t[p.key]).split(" ")[0]);
+  return {
+    key, timings, source,
+    hijri:   `${h.day} ${h.month.en} ${h.year} AH`,
+    hijriAr: `${toArDigits(Number(h.day))} ${h.month.ar} ${toArDigits(h.year)} هـ`,
+    method:  meta && meta.method ? meta.method.name : ""
+  };
+}
+
+// timings.json is written by schedule-athan.sh from the same response it queues the adhan
+// from. Use it only if it is for today and for the settings in config.js; otherwise null.
+async function loadSharedTimings(key){
+  try {
+    const r = await fetch("timings.json?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) return null;
+    const j = await r.json();
+    const same = j.date === key
+      && Number(j.latitude) === Number(CONFIG.latitude) && Number(j.longitude) === Number(CONFIG.longitude)
+      && Number(j.method) === Number(CONFIG.method) && Number(j.school) === Number(CONFIG.school)
+      && String(j.tune || "") === String(CONFIG.tune || "");
+    return same ? timingsRecord(key, j.data, "shared") : null;
+  } catch(e) { return null; }
+}
+
+function useTimings(rec){
+  store.set("timings", rec);
+  applyTimings(rec);
+  setStatus("");
+}
+
+// While showing times fetched by the page itself, keep looking for the scheduler's file
+// (e.g. just after midnight, before the 00:05 cron run) and switch to it once it appears.
+function watchForShared(key){
+  clearTimeout(sharedRetry);
+  sharedRetry = setTimeout(async () => {
+    if (key !== todayKey()) return;            // day rolled over; loadTimings starts afresh
+    const rec = await loadSharedTimings(key);
+    if (rec) useTimings(rec); else watchForShared(key);
+  }, 5 * 60000);
+}
 
 async function loadTimings(){
-  const d = new Date();
-  const key = `${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()}`;
+  const key = todayKey();
+  clearTimeout(sharedRetry);
   const cached = store.get("timings");
   if (cached && cached.key === key) applyTimings(cached);
+
+  const shared = await loadSharedTimings(key);
+  if (shared) { useTimings(shared); return; }
+
+  // Fallback: the scheduler hasn't written today's file (or failed); ask Aladhan directly
   try {
     const url = `https://api.aladhan.com/v1/timings/${key}?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
               + `&method=${CONFIG.method}&school=${CONFIG.school}` + (CONFIG.tune ? `&tune=${CONFIG.tune}` : "");
     const j = await getJSON(url);
-    const t = j.data.timings, h = j.data.date.hijri, meta = j.data.meta;
-    const timings = {};
-    PRAYERS.forEach(p => timings[p.key] = String(t[p.key]).split(" ")[0]);
-    const rec = {
-      key, timings,
-      hijri:   `${h.day} ${h.month.en} ${h.year} AH`,
-      hijriAr: `${toArDigits(Number(h.day))} ${h.month.ar} ${toArDigits(h.year)} هـ`,
-      method:  meta && meta.method ? meta.method.name : ""
-    };
-    store.set("timings", rec);
-    applyTimings(rec);
-    setStatus("");
+    useTimings(timingsRecord(key, j.data, "api"));
+    watchForShared(key);
   } catch(e) {
     if (!(cached && cached.key === key)) setStatus("Prayer times unavailable — retrying…");
     clearTimeout(timingsRetry);

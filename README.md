@@ -23,13 +23,15 @@ Everything runs locally except three free, keyless APIs: [Aladhan](https://aladh
 ```
 cron 00:05 / @reboot ──► schedule-athan.sh ──► Aladhan API
                                │
+                               ├─► web/timings.json (read by the page)
                                └─► at HH:MM ──► play-adhan.sh ──► mpg123 ──► ALSA ──► HDMI ──► TV speakers
 
 LightDM autologin ──► Openbox ──► Chromium --kiosk ──► http://localhost:8080
                                                          │
                                           nginx (Docker) serves /opt/athan/web
                                                          │
-                                  index.html ──► Aladhan / alquran.cloud / hadith-api
+                                  index.html ──► alquran.cloud / hadith-api (Aladhan only as a fallback)
+                                                 ├─► timings.json ◄── schedule-athan.sh (cron 00:05)
                                                  ├─► news.json    ◄── fetch-news.py    (cron */15) ◄── RSS feeds
                                                  ├─► weather.json ◄── fetch-weather.py (cron */10) ◄── Open-Meteo + api.weather.gov
                                                  └─► family.json  ◄── fetch-family.py  (cron */5)  ◄── Radicale (CalDAV) on Unraid
@@ -40,6 +42,8 @@ News and weather are fetched by the box, not the browser: news sites don't send 
 Audio is deliberately decoupled from the browser. The adhan is played by the OS scheduler rather than the web page, so it still plays if Chromium crashes, and browser autoplay rules never get in the way.
 
 `/etc/default/athan` is the single source of truth for location, calculation method, languages, and audio device. `apply-config.sh` renders it into `web/config.js` for the page, and the scheduler reads it directly, so the displayed times and the adhan times always come from the same settings.
+
+The page also shows the scheduler's actual times: `schedule-athan.sh` saves the Aladhan response it queued the adhan from to `web/timings.json`, tagged with the date and settings, and the page uses that file when it matches today and `config.js`. Only if it is missing or stale (for example in the minutes after midnight, or if the scheduler couldn't reach Aladhan) does the page call Aladhan itself, and it switches back to the shared file as soon as one appears.
 
 ## Hardware
 
@@ -126,7 +130,7 @@ systemctl restart lightdm                # restart the kiosk display
 ```
 web/index.html            the dashboard (single file, no build step)
 scripts/install.sh        end-to-end installer
-scripts/schedule-athan.sh fetches times, queues at jobs
+scripts/schedule-athan.sh fetches times, queues at jobs, writes web/timings.json
 scripts/play-adhan.sh     plays the adhan (per-prayer file and volume)
 scripts/apply-config.sh   /etc/default/athan -> web/config.js
 scripts/fetch-media.sh    downloads backgrounds and adhan

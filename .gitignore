@@ -4,6 +4,7 @@ web/news.json
 web/weather.json
 web/family.json
 web/markets.json
+web/timings.json
 athan.conf
 
 # Media is downloaded at install time (see scripts/fetch-media.sh), not committed
