@@ -12,8 +12,8 @@ Everything runs locally except three free, keyless APIs: [Aladhan](https://aladh
 - Ayah of the Hour and Hadith of the Hour (Sahih al-Bukhari / Sahih Muslim) in Arabic, with English, Urdu, and Bengali translations rotating underneath; text auto-sizes to fit
 - Current weather in the header: temperature, feels-like, high/low, rain chance, wind, humidity (Open-Meteo)
 - Alert bar for official National Weather Service watches and warnings, plus heads-ups for rain in the next 12 hours, freezing lows, and very hot days; colour-coded by severity
-- Rotating right panel, one full-size slide at a time: **Ayah of the Hour** and **Hadith of the Hour** (Arabic with English, Urdu and Bengali translations, each language shown once per pass), a **7-Day Forecast**, a **live world-news video** (Al Jazeera English, falling back to DW News or France 24; muted with captions), a **Markets** board (major indices, 10-year yield, oil, gold, Bitcoin with intraday sparklines), then **This Week** (family calendar) and **Lists** (groceries, to-do) from a self-hosted CalDAV server so family iPhones use the built-in Calendar and Reminders apps (see [docs/FAMILY.md](docs/FAMILY.md))
-- Two scrolling headline tickers: NYC local news (NYT New York, Gothamist) and Bengali news (BBC বাংলা, DW বাংলা); any RSS, RDF or Atom feed works, refreshed every 15 minutes
+- Rotating right panel, one full-size slide at a time: **Ayah of the Hour** and **Hadith of the Hour** (Arabic with English, Urdu and Bengali translations, each language shown once per pass), a **7-Day Forecast**, **Breaking News** (the latest NBC, CBS and ABC headlines with their age; anything under an hour old is marked NEW), a **Markets** board (WTI and Brent crude in a large top row, then major indices, 10-year yield and gold, with intraday sparklines), then **This Week** (family calendar) and **Lists** (groceries, to-do) from a self-hosted CalDAV server so family iPhones use the built-in Calendar and Reminders apps (see [docs/FAMILY.md](docs/FAMILY.md))
+- Two scrolling headline tickers: US markets news (MarketWatch, CNBC) and Bengali news (BBC বাংলা, DW বাংলা); any RSS, RDF or Atom feed works, refreshed every 15 minutes
 - Background photos that crossfade every 10 minutes
 - Adhan at all five prayers via `at` jobs queued nightly by cron, with an optional separate recording and volume for Fajr
 - Survives reboots and power cuts: auto-login, auto-launch, Chromium crash-bar suppression, network retry
@@ -90,9 +90,11 @@ Edit `/etc/default/athan`, then apply:
 | `FAMILY_DAYS`, `FAMILY_LISTS` | Days of calendar to show; which reminder lists, in order |
 | `WEATHER` | `true`/`false` for the weather block and alert bar |
 | `FORECAST` | `true`/`false` for the 7-day forecast slide |
-| `NEWS_VIDEO`, `NEWS_VIDEO_MUTED` | Live news video slide on/off; keep it silent (captions on) |
+| `BREAKING_NEWS`, `BREAKING_SECONDS`, `BREAKING_COUNT`, `TOP_NEWS_FEEDS` | Breaking News slide on/off, how long it stays up, how many headlines, and its feeds |
+| `NEWS_VIDEO`, `NEWS_VIDEO_MUTED` | Live news video slide (off by default, replaced by Breaking News); keep it silent (captions on) |
 | `MARKETS_SLIDE`, `MARKETS` | Markets slide on/off; `Label\|SYMBOL;...` list of Yahoo Finance symbols (up to 8) |
-| `US_NEWS_TICKER`, `US_NEWS_LABEL`, `US_NEWS_FEEDS` | English local-news ticker: on/off, label, feeds |
+| `MARKETS_FEATURED` | Symbols shown large in their own top row; default `CL=F;BZ=F` (WTI and Brent crude) |
+| `US_NEWS_TICKER`, `US_NEWS_LABEL`, `US_NEWS_FEEDS` | US markets news ticker: on/off, label, feeds |
 | `NEWS_TICKER` | `true`/`false` to show the Bengali headline ticker |
 | `NEWS_FEEDS` | `Name\|URL;Name\|URL` list of RSS/Atom feeds |
 | `NEWS_SPEED` | Ticker scroll speed in screen-widths per second (default `0.055`) |
