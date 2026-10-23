@@ -33,8 +33,8 @@ UAS = (
     "Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
 )
 COOLDOWN = 30 * 60          # after a run where everything was refused, back off this long
-DEFAULT = ("S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;Russell 2000|^RUT;"
-           "10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F;Bitcoin|BTC-USD")
+DEFAULT = ("WTI Crude|CL=F;Brent Crude|BZ=F;S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;"
+           "10-Yr Treasury|^TNX;Gold|GC=F")
 SPARK_POINTS = 60
 
 

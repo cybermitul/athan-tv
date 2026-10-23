@@ -29,8 +29,15 @@ FAMILY_LISTS="Groceries, To-Do"                 # reminder lists to show, in ord
 WEATHER=true                   # true/false
 FORECAST=true                  # 7-day forecast slide (needs WEATHER=true)
 
-# ---- Live news video slide (YouTube live streams) ----
-NEWS_VIDEO=true
+# ---- Breaking News slide (headlines only, no video) ----
+BREAKING_NEWS=true             # true/false
+BREAKING_SECONDS=30            # how long the slide stays up
+BREAKING_COUNT=5               # headlines shown, newest first; under an hour old is marked NEW
+# Verify any feed you add with:  /opt/athan/test-feeds.py "$TOP_NEWS_FEEDS"
+TOP_NEWS_FEEDS="NBC News|https://feeds.nbcnews.com/nbcnews/public/news;CBS News|https://www.cbsnews.com/latest/rss/main;ABC News|https://abcnews.go.com/abcnews/topstories"
+
+# ---- Live news video slide (YouTube live streams) -- off: replaced by Breaking News ----
+NEWS_VIDEO=false
 NEWS_VIDEO_TITLE="US News Live"
 NEWS_VIDEO_MUTED=true          # false = play the news with sound (skipped 1 min before to 6 min after each adhan)
 NEWS_VIDEO_VOLUME=60           # 0-100, news loudness when not muted
@@ -45,7 +52,10 @@ NEWS_VIDEO_CHANNELS="NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;NBC News|UChDKyKQ59fY
 # ---- Markets slide (Yahoo Finance public chart data, ~15 min delayed) ----
 MARKETS_SLIDE=true
 # "Label|SYMBOL;..." using Yahoo symbols, max 8 shown. Examples: AAPL, MSFT, ^FTSE, BDT=X (USD to taka)
-MARKETS="S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F"
+MARKETS="WTI Crude|CL=F;Brent Crude|BZ=F;S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;10-Yr Treasury|^TNX;Gold|GC=F"
+# Shown large in their own top row, in MARKETS order. Others: NG=F natural gas, RB=F gasoline,
+# HO=F heating oil/diesel. Empty = no featured row.
+MARKETS_FEATURED="CL=F;BZ=F"
 # Verify any symbol before adding it:  /opt/athan/test-symbols.py "Label|SYMBOL;..."
 
 # ---- News ticker speed (applies to both tickers) ----

@@ -35,16 +35,17 @@ set_key AYAH_SECONDS      '24'
 
 # ---- News video: US channels, two minutes per pass ---------------------------
 # Replace the IDs below with the output of yt-channel-id.sh before relying on them.
-set_key NEWS_VIDEO            'true'
+set_key NEWS_VIDEO            'false'   # replaced by the Breaking News slide
 set_key NEWS_VIDEO_TITLE      '"US News Live"'
 set_key NEWS_VIDEO_SECONDS    '120'
 set_key NEWS_VIDEO_CHANNELS   '"NBC News NOW|UCeY0bbntWzzVIaj2z3QigXg;NBC News|UChDKyKQ59fYz3JO2fl0Z6sg;ABC News|UCBi2mrWuNuyYy4gbM6fU18Q;CBS News|UC-SJ6nODDmufqBzPBwCvYvQ"'
 
-# ---- Market tiles: no crypto, no Russell 2000 -------------------------------
-# Six tiles lay out as 3x2 with no empty cells. Check any symbol you add first with
-# test-symbols.py -- a bad symbol is simply dropped from the slide without an error.
+# ---- Market tiles: oil first and large, no crypto, no Russell 2000 ----------
+# WTI and Brent get their own large row; the other five sit in one row beneath.
+# Check any symbol you add first with test-symbols.py -- a bad symbol is simply dropped from the slide without an error.
 set_key MARKETS_SLIDE 'true'
-set_key MARKETS       '"S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;10-Yr Treasury|^TNX;Crude Oil|CL=F;Gold|GC=F"'
+set_key MARKETS       '"WTI Crude|CL=F;Brent Crude|BZ=F;S&P 500|^GSPC;Dow Jones|^DJI;Nasdaq|^IXIC;10-Yr Treasury|^TNX;Gold|GC=F"'
+set_key MARKETS_FEATURED '"CL=F;BZ=F"'
 
 # ---- Ticker: US financial instead of NYC local ------------------------------
 set_key US_NEWS_TICKER 'true'

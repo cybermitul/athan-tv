@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch news headlines (Bengali + US financial) from RSS/RDF/Atom feeds into /opt/athan/web/news.json.
+"""Fetch news headlines (Bengali, US financial, breaking news) from RSS/RDF/Atom feeds into /opt/athan/web/news.json.
 
 Runs from root's crontab every 15 minutes. The web page reads news.json from the
 same origin, which avoids the browser's cross-origin (CORS) block on news sites.
@@ -8,6 +8,7 @@ Only headlines and source names are stored -- no article text.
 Feeds come from /etc/default/athan, each formatted "Name|URL;Name|URL":
   NEWS_FEEDS     Bengali ticker
   US_NEWS_FEEDS  US financial ticker
+  TOP_NEWS_FEEDS Breaking News slide (each headline keeps its timestamp, for "12 min ago")
 If every feed in a group fails, that group's previous headlines are kept.
 """
 import html
@@ -30,8 +31,11 @@ DEFAULT_FEEDS = {
     # endpoint 404s for some hosts regardless of User-Agent.
     "us": "MarketWatch|https://feeds.content.dowjones.io/public/rss/mw_topstories"
           ";CNBC|https://www.cnbc.com/id/10000664/device/rss/rss.html",
+    "top": "NBC News|https://feeds.nbcnews.com/nbcnews/public/news"
+           ";CBS News|https://www.cbsnews.com/latest/rss/main"
+           ";ABC News|https://abcnews.go.com/abcnews/topstories",
 }
-CONF_KEYS = {"bn": "NEWS_FEEDS", "us": "US_NEWS_FEEDS"}
+CONF_KEYS = {"bn": "NEWS_FEEDS", "us": "US_NEWS_FEEDS", "top": "TOP_NEWS_FEEDS"}
 # Yahoo Finance (and some others) answer 404/403 to a non-browser User-Agent, exactly as
 # Yahoo's quote API does in fetch-markets.py. Be honest first, then fall back to browser
 # agents rather than losing the feed. The first agent that works for a feed is used.
@@ -141,7 +145,7 @@ def collect(feeds):
     for i in items:
         if i["title"] not in seen:
             seen.add(i["title"])
-            unique.append({"title": i["title"], "source": i["source"]})
+            unique.append(i)                            # ts is kept: the Breaking News slide shows each headline's age
     return unique[:MAX_TOTAL]
 
 
