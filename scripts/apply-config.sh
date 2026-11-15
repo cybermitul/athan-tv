@@ -47,7 +47,7 @@ window.ATHAN_CONFIG = {
   latitude: ${LATITUDE},
   longitude: ${LONGITUDE},
   method: ${METHOD:-2},
-  school: ${SCHOOL:-0},
+  school: ${SCHOOL:-1},
   tune: "${TUNE:-}",
   langs: ${LANGS_JSON},
   textScaleMax: ${TEXT_SCALE_MAX:-1.6},

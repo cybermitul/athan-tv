@@ -83,7 +83,7 @@ Edit `/etc/default/athan`, then apply:
 |---|---|
 | `LATITUDE`, `LONGITUDE` | Your location |
 | `METHOD` | Calculation method: 2 = ISNA, 3 = MWL, 4 = Umm al-Qura, 5 = Egyptian ([full list](https://aladhan.com/prayer-times-api)) |
-| `SCHOOL` | 0 = standard Asr, 1 = Hanafi Asr |
+| `SCHOOL` | 0 = standard (Shafi) Asr, 1 = Hanafi Asr (default) |
 | `TUNE` | Optional per-prayer minute offsets |
 | `TRANSLATION_LANGS` | Any of `en ur bn`; Arabic is always shown |
 | `FAMILY`, `CALDAV_URL`, `CALDAV_USER`, `CALDAV_PASS` | Family calendar and lists slides; see [docs/FAMILY.md](docs/FAMILY.md) |
