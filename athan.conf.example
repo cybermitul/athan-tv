@@ -5,7 +5,7 @@
 LATITUDE=40.7128
 LONGITUDE=-74.0060
 METHOD=2            # 2 = ISNA (North America), 3 = MWL, 4 = Umm al-Qura, 5 = Egyptian ...
-SCHOOL=0            # 0 = standard Asr, 1 = Hanafi Asr
+SCHOOL=1            # 0 = standard (Shafi) Asr, 1 = Hanafi Asr
 TUNE=""             # optional per-prayer minute offsets, e.g. "0,2,0,0,0,0,0,0,0"
 
 # ---- Display ----

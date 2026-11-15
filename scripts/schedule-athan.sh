@@ -10,7 +10,7 @@ CONF=/etc/default/athan
 LATITUDE="${LATITUDE:-40.7128}"
 LONGITUDE="${LONGITUDE:--74.0060}"
 METHOD="${METHOD:-2}"
-SCHOOL="${SCHOOL:-0}"
+SCHOOL="${SCHOOL:-1}"
 TUNE="${TUNE:-}"
 
 PLAYER=/opt/athan/play-adhan.sh
